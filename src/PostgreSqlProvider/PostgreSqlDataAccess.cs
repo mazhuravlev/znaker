@@ -23,5 +23,16 @@ namespace PostgreSqlProvider
         {
             return _db.TestEntities.Count();
         }
+
+        public void AddPhone(Phone phone)
+        {
+            _db.Phones.Add(phone);
+            _db.SaveChanges();
+        }
+
+        public int CountPhones()
+        {
+            return _db.Phones.Count();
+        }
     }
 }

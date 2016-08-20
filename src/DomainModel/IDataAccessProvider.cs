@@ -7,5 +7,7 @@ namespace DomainModel
     {
         void AddTestEntity(TestEntity entity);
         int CountTestEntities();
+        void AddPhone(Phone phone);
+        int CountPhones();
     }
 }
