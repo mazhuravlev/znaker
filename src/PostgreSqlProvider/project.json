@@ -3,8 +3,7 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "Microsoft.EntityFrameworkCore": "1.0.0",
-    "DomainModel": "1.0.0-*"
+    "Microsoft.EntityFrameworkCore": "1.0.0"
   },
 
   "frameworks": {

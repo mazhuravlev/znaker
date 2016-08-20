@@ -2,30 +2,30 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Znaker.Migrations
+namespace MigrationService.Migrations
 {
-    public partial class test_init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "TestEntities",
+                name: "Phones",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    Text = table.Column<string>(nullable: true)
+                    CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TestEntities", x => x.Id);
+                    table.PrimaryKey("PK_Phones", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TestEntities");
+                name: "Phones");
         }
     }
 }

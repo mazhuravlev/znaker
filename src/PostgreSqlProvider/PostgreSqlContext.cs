@@ -1,5 +1,5 @@
-﻿using DomainModel.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PostgreSqlProvider.Entities;
 
 namespace PostgreSqlProvider
 {
@@ -7,7 +7,6 @@ namespace PostgreSqlProvider
     {
         public PostgreSqlContext(DbContextOptions<PostgreSqlContext> options) : base(options) { }
 
-        public DbSet<TestEntity> TestEntities { get; set; }
         public DbSet<Phone> Phones { get; set; }
 
 

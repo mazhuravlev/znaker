@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DomainModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -41,13 +37,7 @@ namespace Znaker
             {
                 options.LowercaseUrls = true;
             });
-            services.AddDbContext<PostgreSqlContext>(options =>
-                options.UseNpgsql(
-                    Configuration["DataAccessPostgreSqlProvider:ConnectionString"],
-                    b => b.MigrationsAssembly("Znaker")
-                )
-            );
-            services.AddScoped<IDataAccessProvider, PostgreSqlDataAccess>();
+            services.AddDbContext<PostgreSqlContext>(options => options.UseNpgsql(Configuration["DataAccessPostgreSqlProvider:ConnectionString"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +49,6 @@ namespace Znaker
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseBrowserLink();
                 app.UseStaticFiles();
             }
             else

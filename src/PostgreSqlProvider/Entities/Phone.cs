@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DomainModel.Entities
+namespace PostgreSqlProvider.Entities
 {
     public class Phone
     {

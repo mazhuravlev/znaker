@@ -5,18 +5,17 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using PostgreSqlProvider;
 
-namespace Znaker.Migrations
+namespace MigrationService.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    [Migration("20160820074905_phone")]
-    partial class phone
+    partial class PostgreSqlContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
-            modelBuilder.Entity("DomainModel.Entities.Phone", b =>
+            modelBuilder.Entity("PostgreSqlProvider.Entities.Phone", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
@@ -26,18 +25,6 @@ namespace Znaker.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Phones");
-                });
-
-            modelBuilder.Entity("DomainModel.Entities.TestEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TestEntities");
                 });
         }
     }

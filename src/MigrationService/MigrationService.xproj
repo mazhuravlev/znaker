@@ -7,8 +7,8 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>999f1479-4601-406a-bb32-6db25c379f78</ProjectGuid>
-    <RootNamespace>DomainModel</RootNamespace>
+    <ProjectGuid>1e0ef8b8-7937-4edf-a80b-eaa1feb7ba71</ProjectGuid>
+    <RootNamespace>MigrationService</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>

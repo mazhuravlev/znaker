@@ -2,32 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DomainModel;
-using DomainModel.Entities;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Znaker.Migrations;
+using PostgreSqlProvider;
+using PostgreSqlProvider.Entities;
 
 namespace Znaker.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IDataAccessProvider _db;
+        private readonly PostgreSqlContext _db;
 
-        public HomeController(IDataAccessProvider db)
+        public HomeController(PostgreSqlContext db)
         {
             _db = db;
         }
 
         public IActionResult Index()
         {
-            _db.AddTestEntity(new TestEntity
-            {
-                Text = new Random().Next(1, 9999999).ToString()
-            });
-
-            ViewBag.db = _db.CountTestEntities();
-
             ViewBag.test = "Call to action!!!!!!!";
             return View();
         }
@@ -36,11 +28,11 @@ namespace Znaker.Controllers
         {
             var phone = new Phone
             {
-                Id = Convert.ToInt64(new Random().Next(1, 09999999)),
                 CreatedAt = new DateTime()
             };
-            _db.AddPhone(phone);
-            var count = _db.CountPhones();
+            _db.Phones.Add(phone);
+            _db.SaveChanges();
+            var count = _db.Phones.Count();
             Console.WriteLine($"Phones count is {count}");
             ViewBag.phone = phone.Id;
 
