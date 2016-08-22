@@ -26,7 +26,8 @@ namespace Znaker.Controllers
 
         public IActionResult Phone()
         {
-            var phone = new Phone
+            /*
+             var phone = new User
             {
                 CreatedAt = new DateTime()
             };
@@ -34,7 +35,7 @@ namespace Znaker.Controllers
             _db.SaveChanges();
             var count = _db.Phones.Count();
             Console.WriteLine($"Phones count is {count}");
-            ViewBag.phone = phone.Id;
+            ViewBag.phone = phone.Id;*/
 
             return View();
         }
