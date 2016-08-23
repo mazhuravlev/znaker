@@ -14,14 +14,10 @@ namespace PostgreSqlProvider.Entities.v4
             Skype
         }
 
-        [Key]
         public int Id { get; set; }
-
         public string Identity { get; set; }
         public int ContactType { get; set; }
         public DateTime CreatedOn { get; set; }
-
-        [InverseProperty("Contact")]
         public List<EntryContact> EntryContacts { get; set; } = new List<EntryContact>();
     }
 }

@@ -12,7 +12,6 @@ namespace PostgreSqlProvider
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Entry> Entries { get; set; }
         public DbSet<Source> Sources { get; set; }
-        public DbSet<ContactType> ContactTypes { get; set; }
         public DbSet<EntryContact> EntryContacts { get; set; }
 
 
