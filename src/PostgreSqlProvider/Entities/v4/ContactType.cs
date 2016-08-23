@@ -1,15 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PostgreSqlProvider.Entities.v4
 {
     public class ContactType
     {
-        public enum Types
-        {
-            Phone,
-            Email,
-            Skype
-        }
+        [Key]
         public int Id { get; set; }
     }
 }

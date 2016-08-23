@@ -7,11 +7,21 @@ namespace PostgreSqlProvider.Entities.v4
 {
     public class Contact
     {
-        [Key, Column(Order = 1)]
-        public string Id { get; set; }
-        [Key, Column(Order = 0)]
-        public ContactType ContactType { get; set; }
+        public enum ContactTypes
+        {
+            Phone,
+            Email,
+            Skype
+        }
+
+        [Key]
+        public int Id { get; set; }
+
+        public string Identity { get; set; }
+        public int ContactType { get; set; }
         public DateTime CreatedOn { get; set; }
-        public List<Entry> Entry { get; set; } = new List<Entry>();
+
+        [InverseProperty("Contact")]
+        public List<EntryContact> EntryContacts { get; set; } = new List<EntryContact>();
     }
 }
