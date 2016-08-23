@@ -24,7 +24,9 @@ namespace MigrationService.Migrations
 
                     b.Property<DateTime>("CreatedOn");
 
-                    b.Property<string>("Identity");
+                    b.Property<string>("Identity")
+                        .IsRequired()
+                        .HasColumnType("Varchar(40)");
 
                     b.HasKey("Id");
 

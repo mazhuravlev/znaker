@@ -16,7 +16,7 @@ namespace MigrationService.Migrations
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     ContactType = table.Column<int>(nullable: false),
                     CreatedOn = table.Column<DateTime>(nullable: false),
-                    Identity = table.Column<string>(nullable: true)
+                    Identity = table.Column<string>(type: "Varchar(40)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -8,7 +8,7 @@ using PostgreSqlProvider;
 namespace MigrationService.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    [Migration("20160823144153_init")]
+    [Migration("20160823155118_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,9 @@ namespace MigrationService.Migrations
 
                     b.Property<DateTime>("CreatedOn");
 
-                    b.Property<string>("Identity");
+                    b.Property<string>("Identity")
+                        .IsRequired()
+                        .HasColumnType("Varchar(40)");
 
                     b.HasKey("Id");
 

@@ -18,6 +18,7 @@ namespace PostgreSqlProvider
         protected override void OnModelCreating(ModelBuilder b)
         {
             b.Entity<Contact>().HasIndex(c => c.Identity).IsUnique(false);
+            b.Entity<Contact>().Property(c => c.Identity).IsRequired().HasColumnType("Varchar(40)");
 
             b.Entity<EntryContact>()
                 .HasOne(pt => pt.Contact)
