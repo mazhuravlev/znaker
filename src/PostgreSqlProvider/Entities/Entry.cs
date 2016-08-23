@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PostgreSqlProvider.Entities.v4
-{
+namespace PostgreSqlProvider.Entities
+{ 
     public class Entry
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Text { get; set; }
         public DateTime CreatedOn { get; set; }
+        public int SourceId { get; set; }
         public Source Source { get; set; }
         public List<EntryContact> EntryContacts { get; set; } = new List<EntryContact>();
     }

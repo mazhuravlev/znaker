@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PostgreSqlProvider.Entities.v4;
+using PostgreSqlProvider.Entities;
 
 namespace PostgreSqlProvider
 {
@@ -17,6 +17,17 @@ namespace PostgreSqlProvider
 
         protected override void OnModelCreating(ModelBuilder b)
         {
+            b.Entity<Contact>().HasIndex(c => c.Identity).IsUnique(false);
+
+            b.Entity<EntryContact>()
+                .HasOne(pt => pt.Contact)
+                .WithMany(p => p.EntryContacts)
+                .HasForeignKey(pt => pt.ContactId);
+
+            b.Entity<EntryContact>()
+                .HasOne(pt => pt.Entry)
+                .WithMany(t => t.EntryContacts)
+                .HasForeignKey(pt => pt.EntryId);
         }
     }
 }
