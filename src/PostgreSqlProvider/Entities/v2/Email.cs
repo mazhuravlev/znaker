@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PostgreSqlProvider.Entities
+namespace PostgreSqlProvider.Entities.v2
 {
     public class Email
     {

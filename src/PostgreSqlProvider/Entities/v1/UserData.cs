@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PostgreSqlProvider.Entities
+namespace PostgreSqlProvider.Entities.v1
 {
     public class UserData
     {

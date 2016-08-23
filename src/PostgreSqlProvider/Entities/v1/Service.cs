@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PostgreSqlProvider.Entities
+namespace PostgreSqlProvider.Entities.v1
 {
-    public class UserIdentity
+    public class Service
     {
-        public string Id { get; set; }
-        public long UserId { get; set; }
-        public User User { get; set; }
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
         public DateTime CreateDateTime { get; set; }
         public List<UserData> UserDatas { get; set; } = new List<UserData>();
     }

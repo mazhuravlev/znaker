@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PostgreSqlProvider.Entities
+namespace PostgreSqlProvider.Entities.v2
 {
     /**
      * Объявление
