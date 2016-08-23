@@ -12,7 +12,7 @@ namespace PostgreSqlProvider.Entities.v3
     public class Contact
     {
         public long Id { get; set; }
-        public string Identity { get; set; }
+        public string Identity { get; set; } // <- и вот тут прям все подряд хроним
         public DateTime CreateDateTime { get; set; }
         public ContactType ContactType { get; set; }
         public long ContactTypeId { get; set; }
