@@ -21,6 +21,10 @@ namespace PostgreSqlProvider
             b.Entity<Contact>().HasIndex(c => new {c.ContactType, c.Identity}).IsUnique();
             b.Entity<Contact>().Property(c => c.Identity).IsRequired().HasColumnType("Varchar(40)");
 
+            b.Entity<Entry>().Property(c => c.IdOnSource).IsRequired().HasColumnType("Varchar(32)");
+            b.Entity<Entry>().HasIndex(c => new {c.SourceId, c.IdOnSource}).IsUnique();
+            b.Entity<Entry>().HasOne(e => e.Source).WithMany(p => p.Entries).HasForeignKey(e => e.SourceId);
+
             b.Entity<EntryContact>()
                 .HasOne(pt => pt.Contact)
                 .WithMany(p => p.EntryContacts)

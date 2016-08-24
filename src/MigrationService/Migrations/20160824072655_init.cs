@@ -43,6 +43,7 @@ namespace MigrationService.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     CreatedOn = table.Column<DateTime>(nullable: false),
+                    IdOnSource = table.Column<string>(type: "Varchar(32)", nullable: false),
                     SourceId = table.Column<int>(nullable: false),
                     Text = table.Column<string>(nullable: true)
                 },
@@ -89,9 +90,21 @@ namespace MigrationService.Migrations
                 column: "Identity");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Contacts_ContactType_Identity",
+                table: "Contacts",
+                columns: new[] { "ContactType", "Identity" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Entries_SourceId",
                 table: "Entries",
                 column: "SourceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entries_SourceId_IdOnSource",
+                table: "Entries",
+                columns: new[] { "SourceId", "IdOnSource" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_EntryContacts_ContactId",

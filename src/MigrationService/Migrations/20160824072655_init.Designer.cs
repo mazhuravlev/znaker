@@ -8,7 +8,7 @@ using PostgreSqlProvider;
 namespace MigrationService.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    [Migration("20160823155118_init")]
+    [Migration("20160824072655_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,9 @@ namespace MigrationService.Migrations
 
                     b.HasIndex("Identity");
 
+                    b.HasIndex("ContactType", "Identity")
+                        .IsUnique();
+
                     b.ToTable("Contacts");
                 });
 
@@ -43,6 +46,10 @@ namespace MigrationService.Migrations
 
                     b.Property<DateTime>("CreatedOn");
 
+                    b.Property<string>("IdOnSource")
+                        .IsRequired()
+                        .HasColumnType("Varchar(32)");
+
                     b.Property<int>("SourceId");
 
                     b.Property<string>("Text");
@@ -50,6 +57,9 @@ namespace MigrationService.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SourceId");
+
+                    b.HasIndex("SourceId", "IdOnSource")
+                        .IsUnique();
 
                     b.ToTable("Entries");
                 });
@@ -87,7 +97,7 @@ namespace MigrationService.Migrations
             modelBuilder.Entity("PostgreSqlProvider.Entities.Entry", b =>
                 {
                     b.HasOne("PostgreSqlProvider.Entities.Source", "Source")
-                        .WithMany()
+                        .WithMany("Entries")
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
