@@ -8,7 +8,7 @@ using PostgreSqlProvider;
 namespace MigrationService.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    [Migration("20160824072655_init")]
+    [Migration("20160825071925_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,8 +84,7 @@ namespace MigrationService.Migrations
 
             modelBuilder.Entity("PostgreSqlProvider.Entities.Source", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id");
 
                     b.Property<string>("Title");
 

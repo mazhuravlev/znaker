@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "copyToOutput": "appsettings.json"
+  },
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.0"
+    },
+    "PostgreSqlProvider": "1.0.0-*",
+    "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.1",
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Pomelo.EntityFrameworkCore.MySql": "1.0.0",
+    "System.Text.Encoding.CodePages": "4.0.1",
+    "Newtonsoft.Json": "9.0.1",
+    "Infrastructure": "1.0.0-*",
+    "Microsoft.EntityFrameworkCore": "1.0.0" 
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
+    }
+  }
+}

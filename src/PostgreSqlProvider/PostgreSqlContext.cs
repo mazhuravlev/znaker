@@ -5,7 +5,7 @@ namespace PostgreSqlProvider
 {
     public class PostgreSqlContext : DbContext
     {
-        public PostgreSqlContext(DbContextOptions<PostgreSqlContext> options) : base(options)
+        public PostgreSqlContext(DbContextOptions options) : base(options)
         {
         }
 
@@ -17,23 +17,29 @@ namespace PostgreSqlProvider
 
         protected override void OnModelCreating(ModelBuilder b)
         {
-            b.Entity<Contact>().HasIndex(c => c.Identity).IsUnique(false);
-            b.Entity<Contact>().HasIndex(c => new {c.ContactType, c.Identity}).IsUnique();
-            b.Entity<Contact>().Property(c => c.Identity).IsRequired().HasColumnType("Varchar(40)");
+            b.Entity<Contact>(e =>
+            {
+                e.HasIndex(c => c.Identity).IsUnique(false);
+                e.HasIndex(c => new { c.ContactType, c.Identity }).IsUnique();
+                e.Property(c => c.Identity).IsRequired().HasColumnType("Varchar(40)");
+            });
 
-            b.Entity<Entry>().Property(c => c.IdOnSource).IsRequired().HasColumnType("Varchar(32)");
-            b.Entity<Entry>().HasIndex(c => new {c.SourceId, c.IdOnSource}).IsUnique();
-            b.Entity<Entry>().HasOne(e => e.Source).WithMany(p => p.Entries).HasForeignKey(e => e.SourceId);
+            b.Entity<Entry>(e =>
+            {
+                e.Property(c => c.IdOnSource).IsRequired().HasColumnType("Varchar(32)");
+                e.HasIndex(c => new { c.SourceId, c.IdOnSource }).IsUnique();
+            });
 
-            b.Entity<EntryContact>()
-                .HasOne(pt => pt.Contact)
-                .WithMany(p => p.EntryContacts)
-                .HasForeignKey(pt => pt.ContactId);
+            b.Entity<EntryContact>(e =>
+            {
+                e.HasOne(pt => pt.Contact).WithMany(p => p.EntryContacts).HasForeignKey(pt => pt.ContactId);
+                e.HasOne(pt => pt.Entry).WithMany(t => t.EntryContacts).HasForeignKey(pt => pt.EntryId);
+            });
 
-            b.Entity<EntryContact>()
-                .HasOne(pt => pt.Entry)
-                .WithMany(t => t.EntryContacts)
-                .HasForeignKey(pt => pt.EntryId);
+            b.Entity<Source>(e =>
+            {
+                e.Property(c => c.Id).ValueGeneratedNever();
+            });
         }
     }
 }

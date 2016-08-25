@@ -83,8 +83,7 @@ namespace MigrationService.Migrations
 
             modelBuilder.Entity("PostgreSqlProvider.Entities.Source", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id");
 
                     b.Property<string>("Title");
 
