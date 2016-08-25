@@ -22,7 +22,7 @@ namespace MyToPg
         private PostgresContext PgContext => new PostgresContext(pgBuilder.Options);
         private MysqlContext MyContext => new MysqlContext(myBuilder.Options);
 
-        private readonly ConcurrentBag<PhoneItem> _jobList = new ConcurrentBag<PhoneItem>();
+        private readonly ConcurrentQueue<PhoneItem> _jobList = new ConcurrentQueue<PhoneItem>();
 
         private bool _loading = true;
         private int _totalItems = 0;
@@ -142,7 +142,7 @@ namespace MyToPg
                         _itemsSkipped++;
                         return;
                     }
-                    _jobList.Add(item);
+                    _jobList.Enqueue(item);
                 });
             }
             _loading = false;
@@ -152,7 +152,7 @@ namespace MyToPg
             while (_loading || _jobList.Any())
             {
                 PhoneItem item;
-                if (_jobList.TryTake(out item))
+                if (_jobList.TryDequeue(out item))
                 {
                     using (var context = PgContext)
                     {
