@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PostgreSqlProvider;
+using Znaker.Models;
 
 namespace Znaker.Controllers
 {
@@ -20,13 +21,21 @@ namespace Znaker.Controllers
             return View();
         }
 
-        public IActionResult Contact([FromRoute] int id)
+        public IActionResult Contact(long id)
         {
             var contact = _db.Contacts
                 .Include(c => c.EntryContacts)
                 .ThenInclude(ec => ec.Entry)
-                .First(c => c.Id == id);
-            return View(contact);
+                .FirstOrDefault(c => c.Id == id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+            return View(new ContactModel
+            {
+                Identity = contact.Identity,
+                Text = contact.EntryContacts.Select(c => c.Entry.Text).ToList()
+            });
         }
     }
 }

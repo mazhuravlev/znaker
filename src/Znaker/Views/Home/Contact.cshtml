@@ -1,12 +1,11 @@
-﻿@using PostgreSqlProvider.Entities
-@model Contact
+﻿@model Znaker.Models.ContactModel
 
 <h1>@Model.Identity</h1>
-@foreach (var entryContact in @Model.EntryContacts)
+@foreach (var entryContact in Model.Text)
 {
     <div class="panel panel-default">
         <div class="panel-body">
-            @entryContact.Entry.Text
+            @(new HtmlString(entryContact))
         </div>
     </div>
 }
