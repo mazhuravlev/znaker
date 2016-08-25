@@ -1,0 +1,12 @@
+﻿@using PostgreSqlProvider.Entities
+@model Contact
+
+<h1>@Model.Identity</h1>
+@foreach (var entryContact in @Model.EntryContacts)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @entryContact.Entry.Text
+        </div>
+    </div>
+}

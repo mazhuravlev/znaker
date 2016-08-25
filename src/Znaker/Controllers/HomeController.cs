@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Infrastructure;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PostgreSqlProvider;
-using PostgreSqlProvider.Entities;
 
 namespace Znaker.Controllers
 {
@@ -24,20 +20,13 @@ namespace Znaker.Controllers
             return View();
         }
 
-        public IActionResult Phone()
+        public IActionResult Contact([FromRoute] int id)
         {
-            /*
-             var phone = new User
-            {
-                CreatedAt = new DateTime()
-            };
-            _db.Phones.Add(phone);
-            _db.SaveChanges();
-            var count = _db.Phones.Count();
-            Console.WriteLine($"Phones count is {count}");
-            ViewBag.phone = phone.Id;*/
-
-            return View();
+            var contact = _db.Contacts
+                .Include(c => c.EntryContacts)
+                .ThenInclude(ec => ec.Entry)
+                .First(c => c.Id == id);
+            return View(contact);
         }
     }
 }

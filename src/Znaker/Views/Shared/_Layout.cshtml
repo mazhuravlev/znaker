@@ -33,7 +33,7 @@
     @RenderSection("styles", required: false)
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-inverse" role="navigation">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -61,13 +61,13 @@
     </nav>
     <div class="container">
         @RenderBody()
-        <footer>
-            <div class="row">
-                <div class="col-lg-12">
-                    <p>Copyright &copy; Znaker @DateTime.Today.Year</p>
-                </div>
-            </div>
-        </footer>
+@*        <footer>*@
+@*            <div class="row">*@
+@*                <div class="col-lg-12">*@
+@*                    <p>Copyright &copy; Znaker @DateTime.Today.Year</p>*@
+@*                </div>*@
+@*            </div>*@
+@*        </footer>*@
     </div>
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
