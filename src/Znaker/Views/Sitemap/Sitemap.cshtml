@@ -1,20 +1,17 @@
-﻿@{
+﻿@model System.Collections.Generic.List<SitemapModel>
+@{
     Layout = null;
 }
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-    <url>
-
-        <loc>http://www.example.com/</loc>
-
-        <lastmod>2005-01-01</lastmod>
-
-        <changefreq>monthly</changefreq>
-
-        <priority>0.8</priority>
-
-    </url>
-
+    @foreach (var url in Model)
+    {
+        <url>
+            <loc>@url.Loc</loc>
+            <lastmod>@url.Lastmod</lastmod>
+            <changefreq>@url.ChangeFreq</changefreq>
+            <priority>@url.Priority</priority>
+        </url>
+    }
 </urlset>
