@@ -1,11 +1,4 @@
-﻿@model Znaker.Models.ContactModel
+﻿@model ContactModel
+
 
 <h1>@Model.Identity</h1>
-@foreach (var entryContact in Model.Text)
-{
-    <div class="panel panel-default">
-        <div class="panel-body">
-            @(new HtmlString(entryContact))
-        </div>
-    </div>
-}

@@ -9,6 +9,7 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PostgreSqlProvider;
+using Sakura.AspNetCore.Mvc;
 
 namespace Znaker
 {
@@ -38,6 +39,11 @@ namespace Znaker
                 options.LowercaseUrls = true;
             });
             services.AddDbContext<PostgreSqlContext>(options => options.UseNpgsql(Configuration["DataAccessPostgreSqlProvider:ConnectionString"]));
+            services.AddBootstrapPagerGenerator(options =>
+            {
+                // Use default pager options.
+                options.ConfigureDefault();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

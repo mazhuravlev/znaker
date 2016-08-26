@@ -1,1 +1,5 @@
-﻿console.log("wow, so much console log");
+﻿$(document).ready(function() {
+   $("#searchForm").on("submit", function() {
+       this.action += $(this).find("input").val();
+   });
+});

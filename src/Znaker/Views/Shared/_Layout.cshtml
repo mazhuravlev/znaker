@@ -9,23 +9,33 @@
 
     <title>@ViewData["Title"] - Znaker</title>
     <link href="/images/favicon.ico" rel="shortcut icon">
+    
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
 
     <environment names="Development">
         <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-        <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap-material-design/dist/css/bootstrap-material-design.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap-material-design/dist/css/ripples.css" rel="stylesheet" />
         <link href="~/css/style.css" rel="stylesheet" type="text/css">
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only"
               asp-fallback-test-property="position"
               asp-fallback-test-value="absolute"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css"
-              asp-fallback-href="~/lib/font-awesome/css/font-awesome.css"
-              asp-fallback-test-class="fa-stack-2x"
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/bootstrap-material-design.min.css"
+              asp-fallback-href="~/lib/bootstrap-material-design/dist/css/bootstrap-material-design.min.css"
+              asp-fallback-test-class="noUi-origin"
+              asp-fallback-test-property="height"
+              asp-fallback-test-value="2px" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/ripples.min.js"
+              asp-fallback-href="~/lib/bootstrap-material-design/dist/css/ripples.css"
+              asp-fallback-test-class="ripple"
               asp-fallback-test-property="position"
               asp-fallback-test-value="absolute"/>
+
         @* ReSharper disable Html.PathError *@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true"/>
         @* ReSharper restore Html.PathError *@
@@ -33,45 +43,32 @@
     @RenderSection("styles", required: false)
 </head>
 <body>
-    <nav class="navbar navbar-inverse" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Start Bootstrap</a>
-            </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="#">About</a>
-                    </li>
-                    <li>
-                        <a href="#">Services</a>
-                    </li>
-                    <li>
-                        <a href="#">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
     <div class="container">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">
+                        Информация по номерам
+                    </a>
+                </div>
+            </div>
+        </nav>
+        @Html.Partial("Partials/Search")
         @RenderBody()
-@*        <footer>*@
-@*            <div class="row">*@
-@*                <div class="col-lg-12">*@
-@*                    <p>Copyright &copy; Znaker @DateTime.Today.Year</p>*@
-@*                </div>*@
-@*            </div>*@
-@*        </footer>*@
     </div>
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-2059436417027678",
+            enable_page_level_ads: true
+        });
+    </script>
+
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/lib/bootstrap-material-design/dist/js/material.js"></script>
+        @*<script src="~/lib/bootstrap-material-design/dist/js/ripples.js"></script>*@
         <script src="~/js/script.js"></script>
     </environment>
     <environment names="Staging,Production">
@@ -79,17 +76,70 @@
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.3.min.js"
-            asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-            asp-fallback-test="window.jQuery">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
         </script>
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
-            asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/material.min.js"
+                asp-fallback-src="~/lib/bootstrap-material-design/dist/js/material.js">
         </script>
         @* ReSharper disable Html.PathError *@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
         @* ReSharper restore Html.PathError *@
+
+        <script>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+            ga('create', 'UA-78253412-1', 'auto');
+            ga('send', 'pageview');
+        </script>
+
+        <!-- Yandex.Metrika counter -->
+        <script type="text/javascript">
+            (function (d, w, c) {
+                (w[c] = w[c] || []).push(function () {
+                    try {
+                        w.yaCounter36205240 = new Ya.Metrika({
+                            id: 36205240,
+                            clickmap: true,
+                            trackLinks: true,
+                            accurateTrackBounce: true,
+                            webvisor: true
+                        });
+                    } catch (e) {
+                    }
+                });
+
+                var n = d.getElementsByTagName("script")[0],
+                        s = d.createElement("script"),
+                        f = function () {
+                            n.parentNode.insertBefore(s, n);
+                        };
+                s.type = "text/javascript";
+                s.async = true;
+                s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+                if (w.opera == "[object Opera]") {
+                    d.addEventListener("DOMContentLoaded", f, false);
+                } else {
+                    f();
+                }
+            })(document, window, "yandex_metrika_callbacks");
+        </script>
+        <noscript>
+            <div><img src="https://mc.yandex.ru/watch/36205240" style="position:absolute; left:-9999px;" alt="" /></div>
+        </noscript>
+        <!-- /Yandex.Metrika counter -->
     </environment>
     @RenderSection("scripts", required: false)
 </body>

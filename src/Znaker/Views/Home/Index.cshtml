@@ -1,35 +1,71 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@addTagHelper *, Sakura.AspNetCore.Mvc.PagedList
+@model HomeModel
+@{
+    ViewData["Title"] = "Поиск номера телефона";
+}
+@section styles
+{
+    <style>
+        ul.no-style {
+            list-style: none;
+        }
+        .codes-list li { 
+            display: inline-block;
+        }
+        .codes-list li a {
+            color: white;
+        }
+        .more-info {
+            background-color: #5b7fa6;
+            color: white;
+            padding: 2px;
+        }
+    </style>
 }
 
-<header class="jumbotron hero-spacer">
-    <h1>A Warm Welcome!</h1>
-    <p>Записей в тестовой таблице: @ViewBag.db</p>
-    <p>
-        <a class="btn btn-primary btn-large">@ViewBag.test</a>
-    </p>
-</header>
-<hr>
-<div class="row">
-    <div class="col-lg-12">
-        <h3>Latest Features</h3>
+<h1>В базе @Model.Items.TotalCount контактов и @Model.TotalEntries записей</h1>
+@Html.Partial("Partials/Hypercomments")
+@Html.Partial("Partials/VKcomments")
+<div class="panel panel-default">
+    <div class="panel-heading">Реклама</div>
+    <div class="panel-body">
+        @Html.Partial("Banners/Adapt")
     </div>
 </div>
-<div class="row text-center">
-    @for (var i = 0; i < 5; i++)
-    {
-        <div class="col-md-3 col-sm-6 hero-feature">
-            <div class="thumbnail">
-                <img src="http://placehold.it/800x500" alt="">
-                <div class="caption">
-                    <h3>Feature Label</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                    <p>
-                        <a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    }
+<div class="panel panel-default">
+    <div class="panel-heading">Реклама</div>
+    <div class="panel-body">
+        @Html.Partial("Banners/Adapt")
+    </div>
 </div>
-<hr>
+<div class="panel panel-default">
+    <div class="panel-heading">Реклама</div>
+    <div class="panel-body">
+        @Html.Partial("Banners/Adapt")
+    </div>
+</div>
+<ul class="no-style">
+    @foreach (var i in Model.Items)
+    {
+        <li style="margin-bottom: 6px;">
+            <a asp-controller="Home" asp-action="Contact" asp-route-id="@i.Identity">@(new HtmlString(i.Identity))</a>
+            @if (i.TotalData > 0)
+            {
+                <span>
+                    <span class="badge">описание</span>
+                    @(new HtmlString(i.Data.Truncate(110)))
+                </span>
+                if (i.TotalData > 1)
+                {
+                    <a class="more-info" asp-controller="Home" asp-action="Contact" asp-route-id="@i.Identity">+@(i.TotalData - 1) инф</a>
+                }
+            }
+        </li>
+    }
+    </ul>
+<div class="text-center">
+    <pager source="@Model.Items" />
+</div>
+
+
+

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PostgreSqlProvider;
 using Znaker.Models;
+using Sakura.AspNetCore;
 
 namespace Znaker.Controllers
 {
@@ -15,26 +17,37 @@ namespace Znaker.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            ViewBag.test = "Call to action!!!!!!!";
-            return View();
+            var m = new HomeModel
+            {
+                TotalEntries = _db.Entries.Count(),
+                Items = _db.Contacts
+                    .Include(c => c.EntryContacts)
+                    .ThenInclude(c => c.Entry)
+                    .Select(c => new HomeModel.Item
+                    {
+                        Identity = c.Identity,
+                        Data = c.EntryContacts.Select(z => z.Entry.Text).FirstOrDefault(),
+                        TotalData = c.EntryContacts.Count
+                    }).ToPagedList(100, page)
+            };
+            return View(m);
         }
-
-        public IActionResult Contact(long id)
+        [Route("{id}")]
+        public async Task<IActionResult> Contact(string id)
         {
-            var contact = _db.Contacts
-                .Include(c => c.EntryContacts)
-                .ThenInclude(ec => ec.Entry)
-                .FirstOrDefault(c => c.Id == id);
+            var contact =  await _db.Contacts.FirstOrDefaultAsync(c => c.Identity == id);
             if (contact == null)
             {
+                //или редирект на страницу ненаденного контакта
                 return NotFound();
             }
+
+
             return View(new ContactModel
             {
-                Identity = contact.Identity,
-                Text = contact.EntryContacts.Select(c => c.Entry.Text).ToList()
+                Identity = contact.Identity
             });
         }
     }
