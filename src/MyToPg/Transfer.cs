@@ -125,7 +125,7 @@ namespace MyToPg
                         {
                             IdAtSource = source.IdOnSource,
                             Data = json.Value<string>(),
-                            Source = source.SourceId.Contains("olx") ? Source.OlxRu : Source.Avito
+                            Source = source.SourceId.Contains("olx") ? Source.OlxRu : Source.Avito,
                         };
                         if (source.UpdatedAt.HasValue)
                         {
@@ -161,7 +161,8 @@ namespace MyToPg
                             ContactType = ContactTypes.Phone,
                             CreatedOn = item.CreatedAt,
                             Identity = item.Number,
-                            EntryContacts = new List<EntryContact>()
+                            EntryContacts = new List<EntryContact>(),
+                            UpdatedOn = item.CreatedAt
                         };
                         context.Contacts.Add(contact);
                         foreach (var data in item.DataItems)
