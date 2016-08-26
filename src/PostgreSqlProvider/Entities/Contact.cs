@@ -9,6 +9,7 @@ namespace PostgreSqlProvider.Entities
         public string Identity { get; set; }
         public ContactTypes ContactType { get; set; }
         public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public List<EntryContact> EntryContacts { get; set; } = new List<EntryContact>();
     }
 }
