@@ -1,4 +1,12 @@
 ﻿@model ContactModel
 
-
 <h1>@Model.Identity</h1>
+
+@foreach (var text in Model.Texts)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @(new HtmlString(text))
+        </div>
+    </div>
+}

@@ -80,9 +80,6 @@ namespace Znaker
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute(
-                    name: "contacts",
-                    template: "{controller=Home}/{action=Contact}/{id}");
             });
         }
     }

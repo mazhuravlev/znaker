@@ -34,20 +34,23 @@ namespace Znaker.Controllers
             };
             return View(m);
         }
+
         [Route("{id}")]
         public async Task<IActionResult> Contact(string id)
         {
-            var contact =  await _db.Contacts.FirstOrDefaultAsync(c => c.Identity == id);
+            var contact = await _db.Contacts
+                .Include(c => c.EntryContacts)
+                .ThenInclude(ec => ec.Entry)
+                .FirstOrDefaultAsync(c => c.Identity == id);
             if (contact == null)
             {
-                //или редирект на страницу ненаденного контакта
                 return NotFound();
             }
 
-
             return View(new ContactModel
             {
-                Identity = contact.Identity
+                Identity = contact.Identity,
+                Texts = contact.EntryContacts.Select(ec => ec.Entry.Text).ToList()
             });
         }
     }
