@@ -9,12 +9,6 @@
         ul.no-style {
             list-style: none;
         }
-        .codes-list li { 
-            display: inline-block;
-        }
-        .codes-list li a {
-            color: white;
-        }
         .more-info {
             background-color: #5b7fa6;
             color: white;
@@ -48,12 +42,14 @@
     @foreach (var i in Model.Items)
     {
         <li style="margin-bottom: 6px;">
-            <a asp-controller="Home" asp-action="Contact" asp-route-id="@i.Identity">@(new HtmlString(i.Identity))</a>
+            <a asp-controller="Home" asp-action="Contact" asp-route-id="@i.Identity">
+                @(new HtmlString(i.Identity))
+            </a>
             @if (i.TotalData > 0)
             {
                 <span>
                     <span class="badge">описание</span>
-                    @(new HtmlString(i.Data.Truncate(110)))
+                    @(new HtmlString(i.Data.Truncate(80)))
                 </span>
                 if (i.TotalData > 1)
                 {

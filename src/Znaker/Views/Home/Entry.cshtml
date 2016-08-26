@@ -1,0 +1,17 @@
+﻿@model EntryModel
+
+<h1>@Model.Contact</h1>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        @Model.Source - @Model.CreatedOn
+    </div>
+    <div class="panel-body">
+        <span>@(new HtmlString(Model.Text))</span>
+    </div>
+</div>
+<div>
+    <a class="btn btn-default btn-raised" asp-controller="Home" asp-action="Contact" asp-route-id="@Model.Contact">
+        Вернуться к @(new HtmlString(Model.Contact))
+    </a>
+</div>

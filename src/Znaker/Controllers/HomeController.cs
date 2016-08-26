@@ -50,8 +50,31 @@ namespace Znaker.Controllers
             return View(new ContactModel
             {
                 Identity = contact.Identity,
-                Texts = contact.EntryContacts.Select(ec => ec.Entry.Text).ToList()
+                Entries = contact.EntryContacts.Select(ec => new EntryModel
+                {
+                    Id = ec.EntryId,
+                    Contact = ec.Contact.Identity,
+                    Text = ec.Entry.Text
+                }).ToList()
             });
+        }
+
+        [Route("{contact}/entry/{id}")]
+        public IActionResult Entry(string contact, int id)
+        {
+            var entry = _db.Entries.Include(e => e.Source).First(e => e.Id == id);
+            if (null == entry)
+            {
+                return NotFound();
+            }
+            var entryModel = new EntryModel
+            {
+                Text = entry.Text,
+                Contact = contact,
+                Source = entry.Source.Title,
+                CreatedOn = entry.CreatedOn
+            };
+            return View(entryModel);
         }
     }
 }

@@ -2,11 +2,17 @@
 
 <h1>@Model.Identity</h1>
 
-@foreach (var text in Model.Texts)
+@foreach (var entry in Model.Entries)
 {
     <div class="panel panel-default">
         <div class="panel-body">
-            @(new HtmlString(text))
+            <span>@(new HtmlString(entry.Text.Truncate(80)))</span>
+            @if (entry.Text.Length > 80)
+            {
+                <a class="btn btn-danger btn-raised" asp-controller="Home" asp-action="Entry" asp-route-id="@entry.Id" asp-route-contact="@entry.Contact">
+                    Подробнее
+                </a>
+            }
         </div>
     </div>
 }

@@ -5,6 +5,6 @@ namespace Znaker.Models
     public class ContactModel
     {
         public string Identity;
-        public List<string> Texts;
+        public List<EntryModel> Entries;
     }
 }
