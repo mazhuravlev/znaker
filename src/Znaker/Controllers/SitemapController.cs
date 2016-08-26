@@ -7,6 +7,7 @@ using Znaker.Models;
 
 namespace Znaker.Controllers
 {
+    [Route("sitemap")]
     public class SitemapController : Controller
     {
         private readonly PostgreSqlContext _db;
@@ -16,21 +17,29 @@ namespace Znaker.Controllers
             _db = db;
         }
 
-        [Route("/sitemap/index")]
+        [Route("index.xml")]
         public IActionResult Index()
         {
             // TODO: сделать настоящий индекс
-            var sitemapIndex = new SitemapIndex();
-            var maxUpdatedAt = _db.Contacts.Take(50000).Max(c => c.UpdatedOn);
-            var sitemap = new SitemapIndex.Sitemap
+            var totalMaps = Math.Ceiling(_db.Contacts.Count() / 50000D);
+            var model = new List<SitemapIndexModel>();
+            for (var i = 0; i < totalMaps; i++)
             {
-                Loc = "sitemap_1.xml",
-                Lastmod = maxUpdatedAt.ToString("yyyy-MM-ddTHH:mm:sszzz")
-            };
-            sitemapIndex.Sitemaps = new List<SitemapIndex.Sitemap> {sitemap};
+                model.Add(new SitemapIndexModel
+                {
+                    Loc = $"sitemap_{i + 1}.xml",
+                    Lastmod = _db.Contacts.Skip(50000 * i).Take(50000).Max(c => c.UpdatedOn).ToString("yyyy-MM-ddTHH:mm:sszzz")
+                });
+            }
             Response.ContentType = "application/xml";
+            return View(model);
+        }
 
-            return View(sitemapIndex);
+        [Route("sitemap_{id}.xml")]
+        public IActionResult Sitemap(int id)
+        {
+            Response.ContentType = "application/xml";
+            return View();
         }
     }
 }

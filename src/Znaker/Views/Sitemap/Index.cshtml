@@ -1,11 +1,11 @@
-﻿@model SitemapIndex
+﻿@model List<SitemapIndexModel>
 @{
     Layout = null;
 }
 <?xml version="1.0" encoding="UTF-8"?>
 
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    @foreach (var sitemap in Model.Sitemaps)
+    @foreach (var sitemap in Model)
     {
         <sitemap>
             <loc>@sitemap.Loc</loc>
