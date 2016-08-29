@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OlxUa
@@ -9,7 +10,20 @@ namespace OlxUa
     {
         public static void Main(string[] args)
         {
-            const string urlTemplate = "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2";
+
+        }
+
+        public static async Task<HttpStatusCode> GetCode(string url)
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            return response.StatusCode;
+        }
+
+        public static void IncrementSearch()
+        {
+            const string urlTemplate =
+                "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2";
             var startId = 148486659;
             var offset = 0;
             var okCount = 0;
@@ -32,14 +46,13 @@ namespace OlxUa
                 offset--;
                 Console.WriteLine(string.Format("OK: {0}, NotFound: {1}", okCount, notFountCount));
             }
-
         }
 
-        public static async Task<HttpStatusCode> GetCode(string url)
+        public static async Task ListSearch()
         {
             var client = new HttpClient();
-            var response = await client.GetAsync(url);
-            return response.StatusCode;
+            var responseJson = await client.GetStringAsync("https://ssl.olx.ua/i2/ads/?json=1&longlist=1&search");
+
         }
     }
 }
