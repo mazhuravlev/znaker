@@ -7,7 +7,7 @@ using PostgreSqlProvider;
 
 namespace MigrationService.Migrations
 {
-    [DbContext(typeof(PostgreSqlContext))]
+    [DbContext(typeof(ZnakerContext))]
     [Migration("20160826083650_contact_updated_field")]
     partial class contact_updated_field
     {

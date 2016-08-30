@@ -10,9 +10,9 @@ namespace Znaker.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly PostgreSqlContext _db;
+        private readonly ZnakerContext _db;
 
-        public HomeController(PostgreSqlContext db)
+        public HomeController(ZnakerContext db)
         {
             _db = db;
         }

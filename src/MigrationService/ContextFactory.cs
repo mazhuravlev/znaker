@@ -5,14 +5,14 @@ using PostgreSqlProvider;
 
 namespace MigrationService
 {
-    public class ContextFactory : IDbContextFactory<PostgreSqlContext>
+    public class ContextFactory : IDbContextFactory<ZnakerContext>
     {
-        public PostgreSqlContext Create(DbContextFactoryOptions options)
+        public ZnakerContext Create(DbContextFactoryOptions options)
         {
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-            var builder = new DbContextOptionsBuilder<PostgreSqlContext>();
+            var builder = new DbContextOptionsBuilder<ZnakerContext>();
             builder.UseNpgsql(configuration[$"ConnectionString:{options.EnvironmentName}"], b => b.MigrationsAssembly("MigrationService"));
-            return new PostgreSqlContext(builder.Options);
+            return new ZnakerContext(builder.Options);
         }
     }
 }

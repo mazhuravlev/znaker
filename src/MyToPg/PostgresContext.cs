@@ -9,9 +9,9 @@ using PostgreSqlProvider;
 
 namespace MyToPg
 {
-    public class PostgresContext : PostgreSqlContext
+    public class PostgresContext : ZnakerContext
     {
-        public PostgresContext(DbContextOptions options) : base(options)
+        public PostgresContext(DbContextOptions<ZnakerContext> options) : base(options)
         {
         }
     }

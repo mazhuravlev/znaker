@@ -7,7 +7,7 @@ using PostgreSqlProvider;
 
 namespace MigrationService.Migrations
 {
-    [DbContext(typeof(PostgreSqlContext))]
+    [DbContext(typeof(ZnakerContext))]
     partial class PostgreSqlContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

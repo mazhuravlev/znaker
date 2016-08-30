@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Net.Http.Headers;
+using OlxLib;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using Hangfire;
+using Hangfire.Dashboard;
+using OlxLib.Workers;
 using PostgreSqlProvider;
-using Sakura.AspNetCore.Mvc;
 
-namespace Znaker
+namespace OlxServer
 {
     public class Startup
     {
@@ -30,48 +34,44 @@ namespace Znaker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddHangfire(x =>
             {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                x.UseStorage(new PostgreSqlStorage(Configuration["ConnectionStrings:ParserConnectionString"]));
+                RecurringJob.AddOrUpdate<TestWorker>(z => z.Run(), Cron.Minutely);
             });
-            services.AddRouting(options =>
-            {
-                options.LowercaseUrls = true;
-            });
-            services.AddDbContext<ZnakerContext>(options => options.UseNpgsql(Configuration["DataAccessPostgreSqlProvider:ConnectionString"]));
-            services.AddBootstrapPagerGenerator(options =>
-            {
-                // Use default pager options.
-                options.ConfigureDefault();
-            });
+
+            
+            services.AddDbContext<ParserContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ParserConnectionString"]), ServiceLifetime.Transient);
+            services.AddDbContext<ZnakerContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
+
+            services.AddSingleton<TestWorker>();
+
+            // Add framework services.
+            services.AddMvc();
+            services.AddRouting();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                ServerName = "localServer",
+                WorkerCount = Environment.ProcessorCount * 5
+            });
+            app.UseHangfireDashboard(options: new DashboardOptions
+            {
+                StatsPollingInterval = 10000,
+                Authorization = new List<IDashboardAuthorizationFilter>()
+            });
+
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseStaticFiles();
-            }
-            else
-            {
-                app.UseStatusCodePagesWithReExecute("/statuscode/{0}");
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    OnPrepareResponse = context =>
-                    {
-                        var headers = context.Context.Response.GetTypedHeaders();
-                        headers.CacheControl = new CacheControlHeaderValue
-                        {
-                            MaxAge = TimeSpan.FromDays(360)
-                        };
-                    }
-                });
-            }
+            app.UseDeveloperExceptionPage();
+
+            //if (env.IsDevelopment()) { } else { }
 
             app.UseStaticFiles();
 

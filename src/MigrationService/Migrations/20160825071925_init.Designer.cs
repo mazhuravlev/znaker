@@ -7,7 +7,7 @@ using PostgreSqlProvider;
 
 namespace MigrationService.Migrations
 {
-    [DbContext(typeof(PostgreSqlContext))]
+    [DbContext(typeof(ZnakerContext))]
     [Migration("20160825071925_init")]
     partial class init
     {

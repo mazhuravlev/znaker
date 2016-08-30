@@ -14,9 +14,9 @@ namespace Znaker.Controllers
         private const int ContactsBySitemap = 50000;
         private const string SitemapDateFormat = "yyyy-MM-ddTHH:mm:sszzz";
 
-        private readonly PostgreSqlContext _db;
+        private readonly ZnakerContext _db;
 
-        public SitemapController(PostgreSqlContext db)
+        public SitemapController(ZnakerContext db)
         {
             _db = db;
         }

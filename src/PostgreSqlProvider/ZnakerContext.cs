@@ -3,9 +3,9 @@ using PostgreSqlProvider.Entities;
 
 namespace PostgreSqlProvider
 {
-    public class PostgreSqlContext : DbContext
+    public class ZnakerContext : DbContext
     {
-        public PostgreSqlContext(DbContextOptions options) : base(options)
+        public ZnakerContext(DbContextOptions<ZnakerContext> options) : base(options)
         {
         }
 

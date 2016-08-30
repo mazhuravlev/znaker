@@ -10,17 +10,18 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using PostgreSqlProvider;
 using PostgreSqlProvider.Entities;
 
 namespace MyToPg
 {
     public class Transfer
     {
-        private readonly DbContextOptionsBuilder pgBuilder;
-        private readonly DbContextOptionsBuilder myBuilder;
+        private readonly DbContextOptionsBuilder<ZnakerContext> _pgBuilder;
+        private readonly DbContextOptionsBuilder _myBuilder;
 
-        private PostgresContext PgContext => new PostgresContext(pgBuilder.Options);
-        private MysqlContext MyContext => new MysqlContext(myBuilder.Options);
+        private PostgresContext PgContext => new PostgresContext(_pgBuilder.Options);
+        private MysqlContext MyContext => new MysqlContext(_myBuilder.Options);
 
         private readonly ConcurrentQueue<PhoneItem> _jobList = new ConcurrentQueue<PhoneItem>();
 
@@ -33,11 +34,11 @@ namespace MyToPg
         public Transfer()
         {
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-            pgBuilder = new DbContextOptionsBuilder();
-            pgBuilder.UseNpgsql(configuration["PgConnectionString"], b => b.CommandTimeout(100000));
+            _pgBuilder = new DbContextOptionsBuilder<ZnakerContext>();
+            _pgBuilder.UseNpgsql(configuration["PgConnectionString"], b => b.CommandTimeout(100000));
 
-            myBuilder = new DbContextOptionsBuilder();
-            myBuilder.UseMySql(configuration["MyConnectionString"], b => b.CommandTimeout(100000));
+            _myBuilder = new DbContextOptionsBuilder();
+            _myBuilder.UseMySql(configuration["MyConnectionString"], b => b.CommandTimeout(100000));
 
             using (var context = MyContext)
             {
