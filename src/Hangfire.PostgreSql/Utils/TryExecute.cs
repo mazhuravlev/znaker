@@ -1,7 +1,6 @@
 ﻿using System;
-using Npgsql;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore.Utils
 {
     public static partial class Utils
     {

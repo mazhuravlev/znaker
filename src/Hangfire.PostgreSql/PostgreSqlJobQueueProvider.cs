@@ -22,7 +22,7 @@
 using System;
 using System.Data;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
     internal class PostgreSqlJobQueueProvider : IPersistentJobQueueProvider
     {

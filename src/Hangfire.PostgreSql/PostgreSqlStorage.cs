@@ -21,17 +21,17 @@
 
 using System;
 using System.Collections.Generic;
-#if (NETCORE1 || NETCORE50 || NETSTANDARD1_5 || NETSTANDARD1_6)
-#else
-using System.Configuration;
-#endif
 using System.Text;
 using Hangfire.Logging;
 using Hangfire.Server;
 using Hangfire.Storage;
 using Npgsql;
+#if (NETCORE1 || NETCORE50 || NETSTANDARD1_5 || NETSTANDARD1_6)
+#else
+using System.Configuration;
+#endif
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
 	public class PostgreSqlStorage : JobStorage
 	{

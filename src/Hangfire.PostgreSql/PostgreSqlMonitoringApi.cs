@@ -25,13 +25,13 @@ using System.Globalization;
 using System.Linq;
 using Dapper;
 using Hangfire.Common;
-using Hangfire.PostgreSql.Entities;
+using Hangfire.PostgreSql.NetCore.Entities;
 using Hangfire.States;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Npgsql;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
     internal class PostgreSqlMonitoringApi : IMonitoringApi
     {

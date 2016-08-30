@@ -21,16 +21,15 @@
 
 using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using Hangfire.Logging;
-using Npgsql;
 using System.Resources;
 using Dapper;
+using Hangfire.Logging;
+using Npgsql;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
 #if (NETCORE1 || NETCORE50 || NETSTANDARD1_5 || NETSTANDARD1_6)
 #else

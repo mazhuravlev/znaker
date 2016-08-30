@@ -21,7 +21,7 @@
 
 using System;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
 	public class PostgreSqlStorageOptions
 	{

@@ -12,6 +12,7 @@ using OlxLib;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using Hangfire.Dashboard;
+using Hangfire.PostgreSql.NetCore;
 using OlxLib.Workers;
 using PostgreSqlProvider;
 

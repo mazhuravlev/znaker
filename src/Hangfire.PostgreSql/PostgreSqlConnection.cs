@@ -27,13 +27,12 @@ using System.Linq;
 using System.Threading;
 using Dapper;
 using Hangfire.Common;
-using Hangfire.PostgreSql.Entities;
+using Hangfire.PostgreSql.NetCore.Entities;
 using Hangfire.Server;
 using Hangfire.Storage;
 using Npgsql;
-using Hangfire.Annotations;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
 	internal class PostgreSqlConnection : JobStorageConnection
 	{

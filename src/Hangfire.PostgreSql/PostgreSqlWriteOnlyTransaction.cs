@@ -29,7 +29,7 @@ using Hangfire.States;
 using Hangfire.Storage;
 using Npgsql;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
     internal class PostgreSqlWriteOnlyTransaction : IWriteOnlyTransaction
     {

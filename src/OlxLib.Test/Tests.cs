@@ -1,7 +1,7 @@
-﻿using OlxLib;
+﻿using OlxLib.Utils;
 using Xunit;
 
-namespace Tests
+namespace OlxLib.Test
 {
     public class Tests
     {

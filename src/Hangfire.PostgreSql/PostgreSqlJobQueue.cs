@@ -25,11 +25,11 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Dapper;
-using Hangfire.PostgreSql.Annotations;
+using Hangfire.PostgreSql.NetCore.Properties;
 using Hangfire.Storage;
 using Npgsql;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
 	internal class PostgreSqlJobQueue : IPersistentJobQueue
 	{
@@ -90,7 +90,7 @@ RETURNING ""id"" AS ""Id"", ""jobid"" AS ""JobId"", ""queue"" AS ""Queue"", ""fe
 
 				string fetchJobSql = string.Format(fetchJobSqlTemplate, fetchConditions[currentQueryIndex]);
 
-				Utils.TryExecute(() =>
+				Utils.Utils.TryExecute(() =>
 				{
 					using (var trx = _connection.BeginTransaction(IsolationLevel.RepeatableRead))
 					{

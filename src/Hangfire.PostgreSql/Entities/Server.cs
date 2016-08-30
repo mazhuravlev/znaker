@@ -21,7 +21,7 @@
 
 using System;
 
-namespace Hangfire.PostgreSql.Entities
+namespace Hangfire.PostgreSql.NetCore.Entities
 {
     internal class Server
     {

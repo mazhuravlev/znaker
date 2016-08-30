@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace OlxLib
+namespace OlxLib.Utils
 {
     public class IdUtils
     {
@@ -16,31 +16,30 @@ namespace OlxLib
         }
         private static long ArbitraryToDecimalSystem(string number, int radix)
         {
-            const string Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            if (radix < 2 || radix > Digits.Length)
+            const string digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            if (radix < 2 || radix > digits.Length)
             {
-                throw new ArgumentException("The radix must be >= 2 and <= " +
-                    Digits.Length.ToString());
+                throw new ArgumentException("The radix must be >= 2 and <= " + digits.Length);
             }
-            if (String.IsNullOrEmpty(number))
+            if (string.IsNullOrEmpty(number))
             {
                 throw new Exception();
             }
             long result = 0;
             long multiplier = 1;
-            for (int i = number.Length - 1; i >= 0; i--)
+            for (var i = number.Length - 1; i >= 0; i--)
             {
-                char c = number[i];
+                var c = number[i];
                 if (i == 0 && c == '-')
                 {
                     result = -result;
                     break;
                 }
-                int digit = Digits.IndexOf(c);
+                var digit = digits.IndexOf(c);
                 if (digit == -1)
-                    throw new ArgumentException(
-                        "Invalid character in the arbitrary numeral system number",
-                        "number");
+                {
+                    throw new ArgumentException( "Invalid character in the arbitrary numeral system number", nameof(number));
+                }
                 result += digit * multiplier;
                 multiplier *= radix;
             }

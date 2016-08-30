@@ -21,7 +21,7 @@
 
 using System;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
     [Serializable]
     internal class PostgreSqlDistributedLockException : Exception

@@ -19,7 +19,7 @@
 //   
 //    Special thanks goes to him.
 
-namespace Hangfire.PostgreSql.Entities
+namespace Hangfire.PostgreSql.NetCore.Entities
 {
     internal class JobParameter
     {

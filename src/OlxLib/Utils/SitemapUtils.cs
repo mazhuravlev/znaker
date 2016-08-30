@@ -3,11 +3,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace OlxLib
+namespace OlxLib.Utils
 {
     public class SitemapUtils
     {
-        const string sitemapUrlTemplate = "http://olx.ua/sitemap-ads-{0}.xml";  
+        private const string SitemapUrlTemplate = "http://olx.ua/sitemap-ads-{0}.xml";  
         public static List<long> GetIdsFromSitemap(XDocument xdoc)
         {
             XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
@@ -15,7 +15,7 @@ namespace OlxLib
             return xdoc.Root.Elements(ns + "url")
                 .Select(u => u.Element(ns + "loc").Value)
                 .Select(s => regex.Match(s).Groups[1].Value)
-                .Select(s => IdUtils.DecryptOlxId(s))
+                .Select(IdUtils.DecryptOlxId)
                 .ToList();
         }
     }

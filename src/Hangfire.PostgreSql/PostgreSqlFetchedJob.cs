@@ -24,7 +24,7 @@ using System.Data;
 using Dapper;
 using Hangfire.Storage;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
     internal class PostgreSqlFetchedJob : IFetchedJob
     {

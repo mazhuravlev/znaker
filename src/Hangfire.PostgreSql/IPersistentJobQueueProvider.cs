@@ -21,7 +21,7 @@
 
 using System.Data;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
     public interface IPersistentJobQueueProvider
     {

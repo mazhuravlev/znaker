@@ -21,7 +21,7 @@
 
 using System.Collections.Generic;
 
-namespace Hangfire.PostgreSql
+namespace Hangfire.PostgreSql.NetCore
 {
     public interface IPersistentJobQueueMonitoringApi
     {
