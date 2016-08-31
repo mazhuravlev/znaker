@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql.NetCore;
+using Hangfire.Server;
 using OlxLib.Workers;
 using PostgreSqlProvider;
 
@@ -38,14 +39,20 @@ namespace OlxServer
             services.AddHangfire(x =>
             {
                 x.UseStorage(new PostgreSqlStorage(Configuration["ConnectionStrings:ParserConnectionString"]));
-                RecurringJob.AddOrUpdate<TestWorker>(z => z.Run(), Cron.Minutely);
             });
 
-            
             services.AddDbContext<ParserContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ParserConnectionString"]), ServiceLifetime.Transient);
             services.AddDbContext<ZnakerContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
 
-            services.AddSingleton<TestWorker>();
+            services.AddSingleton<ExportWorker>();
+            services.AddSingleton<ParserWorker>();
+            services.AddSingleton<DownloadWorker>();
+
+
+            
+            
+
+
 
             // Add framework services.
             services.AddMvc();
@@ -65,6 +72,22 @@ namespace OlxServer
                 StatsPollingInterval = 10000,
                 Authorization = new List<IDashboardAuthorizationFilter>()
             });
+
+
+
+            //run jobs
+
+            RecurringJob.AddOrUpdate<ParserWorker>(z => z.Run(OlxType.Ua), Cron.Daily);
+            BackgroundJob.Enqueue<ParserWorker>(z => z.Run(OlxType.Ua));
+
+            RecurringJob.AddOrUpdate<ParserWorker>(z => z.Run(OlxType.Kz), Cron.DayInterval(2));
+            BackgroundJob.Schedule<ParserWorker>(z => z.Run(OlxType.Kz), TimeSpan.FromMinutes(10));
+
+            RecurringJob.AddOrUpdate<ParserWorker>(z => z.Run(OlxType.Uz), Cron.DayInterval(2));
+            BackgroundJob.Schedule<ParserWorker>(z => z.Run(OlxType.Uz), TimeSpan.FromMinutes(20));
+
+
+
 
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));

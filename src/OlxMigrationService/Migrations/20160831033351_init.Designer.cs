@@ -8,9 +8,10 @@ using OlxLib;
 namespace OlxMigrationService.Migrations
 {
     [DbContext(typeof(ParserContext))]
-    partial class ParserContextModelSnapshot : ModelSnapshot
+    [Migration("20160831033351_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");

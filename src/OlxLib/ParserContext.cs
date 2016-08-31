@@ -8,7 +8,8 @@ namespace OlxLib
         public ParserContext(DbContextOptions<ParserContext> options) : base(options) { }
 
 
-        public DbSet<Test> Tests { get; set; }
+        public DbSet<DownloadJob> DownloadJobs { get; set; }
+        public DbSet<ExportJob> ExportJobs { get; set; }
 
 
 

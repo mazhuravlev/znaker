@@ -22,6 +22,9 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MyToPg", "src\MyToPg\MyToPg.xproj", "{7AA85320-ADC3-4DCC-9E27-73B9B33472E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parsers", "Parsers", "{9325825F-3F3F-4283-94A5-766C0E048ACF}"
+	ProjectSection(SolutionItems) = preProject
+		Парсер-Кандидаты.txt = Парсер-Кандидаты.txt
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{774E5843-D843-4131-BA9F-FA66D5E09B4E}"
 EndProject

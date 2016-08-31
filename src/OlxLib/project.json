@@ -6,7 +6,8 @@
     "Microsoft.EntityFrameworkCore": "1.0.0",
     "PostgreSqlProvider": "1.0.0-*",
     "Infrastructure": "1.0.0-*",
-    "Hangfire.Core": "1.6.3"
+    "Hangfire.Core": "1.6.3",
+    "Newtonsoft.Json": "9.0.1"
   },
 
   "frameworks": {
