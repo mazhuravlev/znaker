@@ -23,5 +23,10 @@
         {
             return string.Format(_advertContactUrlTemplate, id);
         }
+
+        public string GetSitemapUrl()
+        {
+            return _sitemapUrl;
+        }
     }
 }

@@ -21,10 +21,19 @@ namespace OlxMigrationService.Migrations
                     OlxType = table.Column<int>(nullable: false),
                     ProcessedAt = table.Column<DateTime>(nullable: true)
                 },
-                constraints: table =>
+                constraints: table => { table.PrimaryKey("PK_DownloadJobs", x => x.Id); });
+
+            migrationBuilder.CreateTable(
+                name: "ParserMeta",
+                columns: table => new
                 {
-                    table.PrimaryKey("PK_DownloadJobs", x => x.Id);
-                });
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                    Key = table.Column<string>(nullable: true),
+                    OlxType = table.Column<int>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table => { table.PrimaryKey("PK_ParserMeta", x => x.Id); });
 
             migrationBuilder.CreateTable(
                 name: "ExportJobs",
@@ -51,12 +60,21 @@ namespace OlxMigrationService.Migrations
                 name: "IX_ExportJobs_DownloadJobId",
                 table: "ExportJobs",
                 column: "DownloadJobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParserMeta_OlxType_Key",
+                table: "ParserMeta",
+                columns: new[] {"OlxType", "Key"},
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "ExportJobs");
+
+            migrationBuilder.DropTable(
+                name: "ParserMeta");
 
             migrationBuilder.DropTable(
                 name: "DownloadJobs");

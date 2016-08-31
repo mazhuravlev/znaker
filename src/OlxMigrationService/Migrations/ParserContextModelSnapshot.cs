@@ -56,6 +56,25 @@ namespace OlxMigrationService.Migrations
                     b.ToTable("ExportJobs");
                 });
 
+            modelBuilder.Entity("OlxLib.Entities.ParserMeta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Key");
+
+                    b.Property<int>("OlxType");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OlxType", "Key")
+                        .IsUnique();
+
+                    b.ToTable("ParserMeta");
+                });
+
             modelBuilder.Entity("OlxLib.Entities.ExportJob", b =>
                 {
                     b.HasOne("OlxLib.Entities.DownloadJob", "DownloadJob")

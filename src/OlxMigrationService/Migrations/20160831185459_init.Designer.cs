@@ -8,7 +8,7 @@ using OlxLib;
 namespace OlxMigrationService.Migrations
 {
     [DbContext(typeof(ParserContext))]
-    [Migration("20160831033351_init")]
+    [Migration("20160831185459_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,25 @@ namespace OlxMigrationService.Migrations
                     b.HasIndex("DownloadJobId");
 
                     b.ToTable("ExportJobs");
+                });
+
+            modelBuilder.Entity("OlxLib.Entities.ParserMeta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Key");
+
+                    b.Property<int>("OlxType");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OlxType", "Key")
+                        .IsUnique();
+
+                    b.ToTable("ParserMeta");
                 });
 
             modelBuilder.Entity("OlxLib.Entities.ExportJob", b =>

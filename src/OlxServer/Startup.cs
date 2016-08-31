@@ -45,7 +45,7 @@ namespace OlxServer
             services.AddDbContext<ZnakerContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
 
             services.AddSingleton<ExportWorker>();
-            services.AddSingleton<ParserWorker>();
+            services.AddSingleton<SitemapWorker>();
             services.AddSingleton<DownloadWorker>();
 
 
@@ -77,14 +77,14 @@ namespace OlxServer
 
             //run jobs
 
-            RecurringJob.AddOrUpdate<ParserWorker>(z => z.Run(OlxType.Ua), Cron.Daily);
-            BackgroundJob.Enqueue<ParserWorker>(z => z.Run(OlxType.Ua));
+            RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.Daily);
+            BackgroundJob.Enqueue<SitemapWorker>(z => z.Run(OlxType.Ua));
 
-            RecurringJob.AddOrUpdate<ParserWorker>(z => z.Run(OlxType.Kz), Cron.DayInterval(2));
-            BackgroundJob.Schedule<ParserWorker>(z => z.Run(OlxType.Kz), TimeSpan.FromMinutes(10));
+            RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Kz), Cron.DayInterval(2));
+            BackgroundJob.Schedule<SitemapWorker>(z => z.Run(OlxType.Kz), TimeSpan.FromMinutes(10));
 
-            RecurringJob.AddOrUpdate<ParserWorker>(z => z.Run(OlxType.Uz), Cron.DayInterval(2));
-            BackgroundJob.Schedule<ParserWorker>(z => z.Run(OlxType.Uz), TimeSpan.FromMinutes(20));
+            RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Uz), Cron.DayInterval(2));
+            BackgroundJob.Schedule<SitemapWorker>(z => z.Run(OlxType.Uz), TimeSpan.FromMinutes(20));
 
 
 
