@@ -35,7 +35,7 @@ namespace OlxLib
 
         public OlxConfig GetOlxConfig(OlxType type)
         {
-            return _configs.First(c => c.Type == type);
+            return _configs.First(c => c.OlxType == type);
         }
         public ParserContext GetParserContext()
         {

@@ -1,75 +1,106 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 using OlxLib.Entities;
+using OlxLib.Utils;
 
 namespace OlxLib.Workers
 {
-    public class SitemapWorker : BaseWorker
+    public class SitemapWorker
     {
         private class Sitemap
         {
             public int Number;
             public string Loc;
-            public DateTime Lastmod;
+            public string Lastmod;
         }
 
-        public SitemapWorker(IServiceProvider serviceProvider) : base(serviceProvider)
+        private readonly ParserContext _db;
+
+        public SitemapWorker(ParserContext parserContext)
         {
+            _db = parserContext;
         }
 
-        public string Run(OlxType type)
+        public string Run(OlxConfig config)
         {
-            var config = GetOlxConfig(type);
-            var sitemapString = DownloadFileString(config.GetSitemapUrl()).Result;
-            var xdoc = XDocument.Parse(sitemapString);
+            var sitemaps = ParseIndexSitemap(
+                XDocument.Parse(
+                    HttpUtils.DownloadString(config.GetSitemapUrl()).Result
+                )
+            );
+            foreach (var sitemap in sitemaps)
+            {
+                HandleSitemap(sitemap, config.OlxType);
+            }
+            //_db.SaveChanges();
+            return "Ok!";
+        }
+
+        private static IEnumerable<Sitemap> ParseIndexSitemap(XDocument indexSitemapXdoc)
+        {
             XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
             var adsSitemapRegex = new Regex(@"sitemap-ads-(\d+)\.xml");
-            var sitemaps = xdoc.Root.Elements(ns + "sitemap")
+            return indexSitemapXdoc.Root.Elements(ns + "sitemap")
                 .Where(s => adsSitemapRegex.Match(s.Element(ns + "loc").Value).Length > 0)
                 .Select(s => new Sitemap
                 {
                     Number = int.Parse(adsSitemapRegex.Match(s.Element(ns + "loc").Value).Groups[1].Value),
                     Loc = s.Element(ns + "loc").Value,
-                    Lastmod = DateTime.Parse(s.Element(ns + "lastmod").Value)
+                    Lastmod = s.Element(ns + "lastmod").Value
                 })
                 .ToList();
-            var db = GetParserContext();
-            foreach (var sitemap in sitemaps)
-            {
-                var lastmodMetaKey = "lastmod_sitemap_" + sitemap.Number;
-                var lastmodMeta = db.ParserMeta.FirstOrDefault(pm => pm.OlxType == type && pm.Key == lastmodMetaKey);
-                if (null != lastmodMeta)
-                {
-                    // TODO: compare date, if downloaded one is newer, update and process sitemap. Skip if date is the same.
-                }
-                else
-                {
-                    // TODO: download and process sitemap
-                    var newLastmodMeta = new ParserMeta
-                    {
-                        Key = lastmodMetaKey,
-                        OlxType = type,
-                        Value = sitemap.Lastmod.ToString(CultureInfo.CurrentCulture)
-                    };
-                    db.ParserMeta.Add(newLastmodMeta);
-                    db.SaveChanges();
-                }
-            }
-
-            return "Ok!";
         }
 
-        private async Task<string> DownloadFileString(string url)
+        private void HandleSitemap(Sitemap sitemap, OlxType olxType)
         {
-            var client = new HttpClient();
-            return await client.GetStringAsync(url);
+            var lastmodMeta = _db.ParserMeta.FirstOrDefault(
+                pm => pm.OlxType == olxType && pm.Key == GetLastmodMetaKey(sitemap)
+            );
+            if (null != lastmodMeta && (lastmodMeta.Value != sitemap.Lastmod))
+            {
+                Console.WriteLine($"Updated sitemap: {sitemap.Number}, download and process");
+                if (ProcessSitemap(sitemap))
+                {
+                    UpdateMeta(lastmodMeta, sitemap.Lastmod);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"New sitemap: {sitemap.Number}, download and process");
+                if (ProcessSitemap(sitemap))
+                {
+                    CreateLastmodMeta(sitemap, olxType);
+                }
+            }
+        }
+
+        private void CreateLastmodMeta(Sitemap sitemap, OlxType olxType)
+        {
+            var newLastmodMeta = new ParserMeta
+            {
+                Key = GetLastmodMetaKey(sitemap),
+                OlxType = olxType,
+                Value = sitemap.Lastmod
+            };
+            _db.ParserMeta.Add(newLastmodMeta);
+        }
+
+        private static void UpdateMeta(ParserMeta lastmodMeta, string sitemapLastmod)
+        {
+            lastmodMeta.Value = sitemapLastmod;
+        }
+
+        private static bool ProcessSitemap(Sitemap sitemap)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static string GetLastmodMetaKey(Sitemap sitemap)
+        {
+            return $"sitemap:{sitemap.Loc}:lastmod";
         }
     }
 }

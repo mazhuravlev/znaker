@@ -5,14 +5,14 @@
         private readonly string _advertDataUrlTemplate;
         private readonly string _advertContactUrlTemplate;
         private readonly string _sitemapUrl;
-        public readonly OlxType Type;
+        public readonly OlxType OlxType;
 
-        public OlxConfig(OlxType type, string sitemapUrl, string advertDataUrlTemplate, string advertContactUrlTemplate)
+        public OlxConfig(OlxType olxType, string sitemapUrl, string advertDataUrlTemplate, string advertContactUrlTemplate)
         {
             _sitemapUrl = sitemapUrl;
             _advertDataUrlTemplate = advertDataUrlTemplate;
             _advertContactUrlTemplate = advertContactUrlTemplate;
-            Type = type;
+            OlxType = olxType;
         }
 
         public string GetAdvertDataUrl(int id)
