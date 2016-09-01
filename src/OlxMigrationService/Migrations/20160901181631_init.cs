@@ -15,13 +15,16 @@ namespace OlxMigrationService.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     AdvId = table.Column<int>(nullable: false),
-                    CreateAt = table.Column<DateTime>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
                     HttpResponse = table.Column<int>(nullable: true),
                     OlxResponse = table.Column<int>(nullable: false),
                     OlxType = table.Column<int>(nullable: false),
                     ProcessedAt = table.Column<DateTime>(nullable: true)
                 },
-                constraints: table => { table.PrimaryKey("PK_DownloadJobs", x => x.Id); });
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DownloadJobs", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "ParserMeta",
@@ -33,7 +36,10 @@ namespace OlxMigrationService.Migrations
                     OlxType = table.Column<int>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
-                constraints: table => { table.PrimaryKey("PK_ParserMeta", x => x.Id); });
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParserMeta", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "ExportJobs",
@@ -57,6 +63,12 @@ namespace OlxMigrationService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_DownloadJobs_OlxType_AdvId",
+                table: "DownloadJobs",
+                columns: new[] { "OlxType", "AdvId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ExportJobs_DownloadJobId",
                 table: "ExportJobs",
                 column: "DownloadJobId");
@@ -64,7 +76,7 @@ namespace OlxMigrationService.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ParserMeta_OlxType_Key",
                 table: "ParserMeta",
-                columns: new[] {"OlxType", "Key"},
+                columns: new[] { "OlxType", "Key" },
                 unique: true);
         }
 

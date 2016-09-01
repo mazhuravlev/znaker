@@ -12,13 +12,7 @@ namespace OlxLib.Test
         public void TestSitemapWorker()
         {
             var worker = new SitemapWorker(CreateServiceProvider().GetService<ParserContext>());
-            var config = new OlxConfig(
-                OlxType.Ua,
-                "http://olx.ua/sitemap.xml",
-                "PlaceHereAdvdataurl{0}",
-                "PlaceHereAdvcontacturl{0}"
-            );
-            worker.Run(config);
+            worker.Run(OlxType.Ua);
         }
 
         private static IServiceProvider CreateServiceProvider()

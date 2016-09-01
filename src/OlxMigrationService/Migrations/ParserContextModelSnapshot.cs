@@ -22,7 +22,7 @@ namespace OlxMigrationService.Migrations
 
                     b.Property<int>("AdvId");
 
-                    b.Property<DateTime>("CreateAt");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<int?>("HttpResponse");
 
@@ -33,6 +33,9 @@ namespace OlxMigrationService.Migrations
                     b.Property<DateTime?>("ProcessedAt");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OlxType", "AdvId")
+                        .IsUnique();
 
                     b.ToTable("DownloadJobs");
                 });

@@ -16,6 +16,9 @@ namespace OlxLib
             b.Entity<ParserMeta>(
                 pm => pm.HasIndex(c => new { c.OlxType, c.Key }).IsUnique()
             );
+            b.Entity<DownloadJob>(
+                dj => dj.HasIndex(c => new { c.OlxType, c.AdvId }).IsUnique()    
+            );
         }
     }
 }

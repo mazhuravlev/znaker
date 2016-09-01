@@ -5,15 +5,20 @@ namespace OlxLib.Utils
 {
     public class IdUtils
     {
-        public static long DecryptOlxId(string olxId)
+        public static int DecryptOlxId(string olxId)
         {
-            return ArbitraryToDecimalSystem(SwapCase(olxId), 62);
+            return (int) ArbitraryToDecimalSystem(SwapCase(olxId), 62);
         }
+
         private static string SwapCase(string input)
         {
-            return new string(input.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
-                       char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
+            return new string(input.Select(c => char.IsLetter(c)
+                ? (char.IsUpper(c)
+                    ? char.ToLower(c)
+                    : char.ToUpper(c))
+                : c).ToArray());
         }
+
         private static long ArbitraryToDecimalSystem(string number, int radix)
         {
             const string digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -38,9 +43,10 @@ namespace OlxLib.Utils
                 var digit = digits.IndexOf(c);
                 if (digit == -1)
                 {
-                    throw new ArgumentException( "Invalid character in the arbitrary numeral system number", nameof(number));
+                    throw new ArgumentException("Invalid character in the arbitrary numeral system number",
+                        nameof(number));
                 }
-                result += digit * multiplier;
+                result += digit*multiplier;
                 multiplier *= radix;
             }
             return result;
