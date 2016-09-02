@@ -8,9 +8,10 @@ using PostgreSqlProvider;
 namespace MigrationService.Migrations
 {
     [DbContext(typeof(ZnakerContext))]
-    partial class PostgreSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20160902000331_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
@@ -53,11 +54,13 @@ namespace MigrationService.Migrations
 
                     b.Property<int>("SourceId");
 
+                    b.Property<int?>("SourceId1");
+
                     b.Property<string>("Text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceId");
+                    b.HasIndex("SourceId1");
 
                     b.HasIndex("SourceId", "IdOnSource")
                         .IsUnique();
@@ -98,8 +101,7 @@ namespace MigrationService.Migrations
                 {
                     b.HasOne("PostgreSqlProvider.Entities.Source", "Source")
                         .WithMany("Entries")
-                        .HasForeignKey("SourceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("SourceId1");
                 });
 
             modelBuilder.Entity("PostgreSqlProvider.Entities.EntryContact", b =>

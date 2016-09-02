@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Infrastructure;
+using PostgreSqlProvider.Entities;
 
 namespace MyToPg
 {
@@ -14,15 +16,11 @@ namespace MyToPg
 
     public class DataItem
     {
-        public Source Source;
+        public SourceType Source;
         public string Data;
         public string IdAtSource;
         public DateTime CreatedAt;
     }
 
-    public enum Source
-    {
-        Avito = 1,
-        OlxRu = 2
-    }
+    
 }

@@ -16,7 +16,8 @@ namespace MigrationService.Migrations
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     ContactType = table.Column<int>(nullable: false),
                     CreatedOn = table.Column<DateTime>(nullable: false),
-                    Identity = table.Column<string>(type: "Varchar(40)", nullable: false)
+                    Identity = table.Column<string>(type: "Varchar(40)", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -44,17 +45,18 @@ namespace MigrationService.Migrations
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     IdOnSource = table.Column<string>(type: "Varchar(32)", nullable: false),
                     SourceId = table.Column<int>(nullable: false),
+                    SourceId1 = table.Column<int>(nullable: true),
                     Text = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Entries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Entries_Sources_SourceId",
-                        column: x => x.SourceId,
+                        name: "FK_Entries_Sources_SourceId1",
+                        column: x => x.SourceId1,
                         principalTable: "Sources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,9 +97,9 @@ namespace MigrationService.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Entries_SourceId",
+                name: "IX_Entries_SourceId1",
                 table: "Entries",
-                column: "SourceId");
+                column: "SourceId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Entries_SourceId_IdOnSource",

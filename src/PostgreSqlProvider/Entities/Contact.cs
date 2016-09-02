@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Infrastructure;
 
 namespace PostgreSqlProvider.Entities
 { 
@@ -7,7 +8,7 @@ namespace PostgreSqlProvider.Entities
     {
         public long Id { get; set; }
         public string Identity { get; set; }
-        public ContactTypes ContactType { get; set; }
+        public ContactType ContactType { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public List<EntryContact> EntryContacts { get; set; } = new List<EntryContact>();

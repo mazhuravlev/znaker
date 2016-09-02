@@ -16,7 +16,9 @@ namespace OlxLib.Workers
                 "PlaceHereAdvcontacturl{0}"),
             new OlxConfig(OlxType.Uz, "http://olx.uz/sitemap.xml", "PlaceHereAdvdataurl{0}",
                 "PlaceHereAdvcontacturl{0}"),
-            new OlxConfig(OlxType.Kz, "http://olx.kz/sitemap.xml", "PlaceHereAdvdataurl{0}",
+            new OlxConfig(OlxType.Kz, "http://www.olx.kz/sitemap.xml", "PlaceHereAdvdataurl{0}",
+                "PlaceHereAdvcontacturl{0}"),
+            new OlxConfig(OlxType.By, "https://www.olx.by/sitemap.xml", "PlaceHereAdvdataurl{0}",
                 "PlaceHereAdvcontacturl{0}")
         };
 

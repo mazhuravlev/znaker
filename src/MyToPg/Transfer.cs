@@ -26,10 +26,10 @@ namespace MyToPg
         private readonly ConcurrentQueue<PhoneItem> _jobList = new ConcurrentQueue<PhoneItem>();
 
         private bool _loading = true;
-        private int _totalItems = 0;
-        private int _itemsLoaded = 0;
-        private int _itemsSkipped = 0;
-        private int _itemsAdded = 0;
+        private int _totalItems;
+        private int _itemsLoaded;
+        private int _itemsSkipped;
+        private int _itemsAdded;
 
         public Transfer()
         {
@@ -46,17 +46,7 @@ namespace MyToPg
             }
             using (var context = PgContext)
             {
-                context.Database.ExecuteSqlCommand("TRUNCATE TABLE public.\"Contacts\", public.\"Entries\", public.\"EntryContacts\", public.\"Sources\" RESTART IDENTITY;");
-                context.Sources.Add(new PostgreSqlProvider.Entities.Source
-                {
-                    Id = (int) Source.Avito,
-                    Title = "Avito"
-                });
-                context.Sources.Add(new PostgreSqlProvider.Entities.Source
-                {
-                    Id = (int) Source.OlxRu,
-                    Title = "OlxRu"
-                });
+                context.Database.ExecuteSqlCommand("TRUNCATE TABLE public.\"Contacts\", public.\"Entries\", public.\"EntryContacts\" RESTART IDENTITY;");
                 context.SaveChanges();
             }
         }
@@ -126,7 +116,7 @@ namespace MyToPg
                         {
                             IdAtSource = source.IdOnSource,
                             Data = json.Value<string>(),
-                            Source = source.SourceId.Contains("olx") ? Source.OlxRu : Source.Avito,
+                            Source = source.SourceId.Contains("olx") ? SourceType.OlxUa : SourceType.Avito
                         };
                         if (source.UpdatedAt.HasValue)
                         {
@@ -159,7 +149,7 @@ namespace MyToPg
                     {
                         var contact = new Contact
                         {
-                            ContactType = ContactTypes.Phone,
+                            ContactType = ContactType.Phone,
                             CreatedOn = item.CreatedAt,
                             Identity = item.Number,
                             EntryContacts = new List<EntryContact>(),

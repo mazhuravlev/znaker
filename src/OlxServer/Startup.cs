@@ -77,6 +77,7 @@ namespace OlxServer
 
             //run jobs
 
+            /*
             RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.Daily);
             BackgroundJob.Enqueue<SitemapWorker>(z => z.Run(OlxType.Ua));
 
@@ -85,6 +86,7 @@ namespace OlxServer
 
             RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Uz), Cron.DayInterval(2));
             BackgroundJob.Schedule<SitemapWorker>(z => z.Run(OlxType.Uz), TimeSpan.FromMinutes(20));
+            */
 
 
 
