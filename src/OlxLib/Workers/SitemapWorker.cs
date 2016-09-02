@@ -62,18 +62,27 @@ namespace OlxLib.Workers
             return ids.Count;
         }
 
-        private void CreateDownloadJobs(IEnumerable<int> adIds)
+        private void CreateDownloadJobs(IReadOnlyCollection<int> adIds)
         {
-            _db.DownloadJobs.AddRange(
-                adIds.Select(i => new DownloadJob
-                    {
-                        AdvId = i,
-                        OlxType = _config.OlxType,
-                        CreatedAt = DateTime.Now
-                    }
-                )
-            );
-            _db.SaveChanges();
+            var existingIds = _db.DownloadJobs
+                .Where(dj => _config.OlxType == dj.OlxType && dj.AdvId <= adIds.Max() && dj.AdvId >= adIds.Min())
+                .Select(dj => dj.AdvId)
+                .ToList();
+            const int batchSize = 1000;
+            for (var batchNumber = 0; batchNumber * batchSize < adIds.Count; batchNumber++)
+            {
+                _db.DownloadJobs.AddRange(
+                    adIds.Skip(batchSize * batchNumber).Take(batchSize)
+                        .Where(id => !existingIds.Contains(id))
+                        .Select(id => new DownloadJob
+                        {
+                            AdvId = id,
+                            OlxType = _config.OlxType
+                        }
+                    )
+                );
+                _db.SaveChanges();
+            }
         }
 
         private void CreateLastmodMeta(SitemapModel sitemap, OlxType olxType)
@@ -101,13 +110,13 @@ namespace OlxLib.Workers
 
         private static class SitemapUtils
         {
-            private static readonly XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+            private static readonly XNamespace Ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
             public static IEnumerable<int> GetIdsFromSitemap(XDocument sitemapXdoc)
             {
                 var regex = new Regex(@"ID([a-zA-Z0-9]+)");
-                return sitemapXdoc.Root.Elements(ns + "url")
-                    .Select(u => u.Element(ns + "loc").Value)
+                return sitemapXdoc.Root.Elements(Ns + "url")
+                    .Select(u => u.Element(Ns + "loc").Value)
                     .Select(s => regex.Match(s).Groups[1].Value)
                     .Select(IdUtils.DecryptOlxId);
             }
@@ -115,13 +124,13 @@ namespace OlxLib.Workers
             public static IEnumerable<SitemapModel> ParseIndexSitemap(XDocument indexSitemapXdoc)
             {
                 var adsSitemapRegex = new Regex(@"sitemap-ads-(\d+)\.xml");
-                return indexSitemapXdoc.Root.Elements(ns + "sitemap")
-                    .Where(s => adsSitemapRegex.Match(s.Element(ns + "loc").Value).Length > 0)
+                return indexSitemapXdoc.Root.Elements(Ns + "sitemap")
+                    .Where(s => adsSitemapRegex.Match(s.Element(Ns + "loc").Value).Length > 0)
                     .Select(s => new SitemapModel
                     {
-                        Number = int.Parse(adsSitemapRegex.Match(s.Element(ns + "loc").Value).Groups[1].Value),
-                        Loc = s.Element(ns + "loc").Value,
-                        Lastmod = s.Element(ns + "lastmod").Value
+                        Number = int.Parse(adsSitemapRegex.Match(s.Element(Ns + "loc").Value).Groups[1].Value),
+                        Loc = s.Element(Ns + "loc").Value,
+                        Lastmod = s.Element(Ns + "lastmod").Value
                     })
                     .ToList();
             }

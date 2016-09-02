@@ -6,12 +6,12 @@ using Xunit;
 
 namespace OlxLib.Test
 {
-    public class SitemapWorkerTests
+    public class DownloadWorkerTests
     {
         [Fact]
         public void TestRun()
         {
-            var worker = new SitemapWorker(CreateServiceProvider().GetService<ParserContext>());
+            var worker = new DownloadWorker(CreateServiceProvider().GetService<ParserContext>());
             worker.Run(OlxType.Ua);
         }
 

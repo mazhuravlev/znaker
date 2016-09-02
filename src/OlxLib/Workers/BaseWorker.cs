@@ -15,7 +15,7 @@ namespace OlxLib.Workers
             new OlxConfig(
                     OlxType.Ua, 
                     "http://olx.ua/sitemap.xml", 
-                    "PlaceHereAdvdataurl{0}",
+                    "https://ssl.olx.ua/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
                     "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
                 ),
 

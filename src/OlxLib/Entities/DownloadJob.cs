@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace OlxLib.Entities
 {
@@ -8,8 +9,10 @@ namespace OlxLib.Entities
         public OlxType OlxType { get; set; }
         public int AdvId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public DateTime? ProcessedAt { get; set; }
-        public int? HttpResponseCode { get; set; }
+        public HttpStatusCode? AdHttpStatusCode { get; set; }
+        public HttpStatusCode? ContactsHttpStatusCode { get; set; }
         public OlxResponse OlxResponse { get; set; }
     }
 }

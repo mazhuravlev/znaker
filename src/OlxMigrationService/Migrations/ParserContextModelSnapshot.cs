@@ -20,17 +20,23 @@ namespace OlxMigrationService.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("AdHttpStatusCode");
+
                     b.Property<int>("AdvId");
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<int?>("ContactsHttpStatusCode");
 
-                    b.Property<int?>("HttpResponseCode");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(new DateTime(2016, 9, 2, 17, 20, 43, 909, DateTimeKind.Local));
 
                     b.Property<int>("OlxResponse");
 
                     b.Property<int>("OlxType");
 
                     b.Property<DateTime?>("ProcessedAt");
+
+                    b.Property<DateTime?>("UpdatedAt");
 
                     b.HasKey("Id");
 

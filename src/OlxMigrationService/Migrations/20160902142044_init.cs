@@ -14,12 +14,15 @@ namespace OlxMigrationService.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                    AdHttpStatusCode = table.Column<int>(nullable: true),
                     AdvId = table.Column<int>(nullable: false),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    HttpResponseCode = table.Column<int>(nullable: true),
+                    ContactsHttpStatusCode = table.Column<int>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2016, 9, 2, 17, 20, 43, 909, DateTimeKind.Local))
+                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     OlxResponse = table.Column<int>(nullable: false),
                     OlxType = table.Column<int>(nullable: false),
-                    ProcessedAt = table.Column<DateTime>(nullable: true)
+                    ProcessedAt = table.Column<DateTime>(nullable: true),
+                    UpdatedAt = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
