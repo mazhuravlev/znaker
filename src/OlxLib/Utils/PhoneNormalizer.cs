@@ -28,6 +28,10 @@ namespace OlxLib.Utils
             {
                 throw new FormatException("Ну и что с такими делать, будем добавлять?");
             }
+            if (GoodNumber.IsMatch(phone))
+            {
+                return phone;
+            }
 
             var uaMatch = UaMobile.Match(phone);
             if (uaMatch.Success)
@@ -40,10 +44,8 @@ namespace OlxLib.Utils
             {
                 return $"7{ruMatch.Groups["base"].Value}";
             }
-
-
-
-            throw new FormatException("Ну и что с такими делать, будем добавлять?");
+            
+            throw new FormatException("Что то непонятное тут, что с такими делать, будем добавлять?");
         }
 
     }
