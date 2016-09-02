@@ -24,7 +24,7 @@ namespace OlxMigrationService.Migrations
 
                     b.Property<DateTime>("CreatedAt");
 
-                    b.Property<int?>("HttpResponse");
+                    b.Property<int?>("HttpResponseCode");
 
                     b.Property<int>("OlxResponse");
 

@@ -16,7 +16,7 @@ namespace OlxMigrationService.Migrations
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     AdvId = table.Column<int>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    HttpResponse = table.Column<int>(nullable: true),
+                    HttpResponseCode = table.Column<int>(nullable: true),
                     OlxResponse = table.Column<int>(nullable: false),
                     OlxType = table.Column<int>(nullable: false),
                     ProcessedAt = table.Column<DateTime>(nullable: true)

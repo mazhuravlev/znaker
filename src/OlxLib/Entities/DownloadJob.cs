@@ -9,7 +9,7 @@ namespace OlxLib.Entities
         public int AdvId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ProcessedAt { get; set; }
-        public int? HttpResponse { get; set; }
+        public int? HttpResponseCode { get; set; }
         public OlxResponse OlxResponse { get; set; }
     }
 }
