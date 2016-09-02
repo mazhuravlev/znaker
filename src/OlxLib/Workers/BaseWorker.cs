@@ -12,14 +12,33 @@ namespace OlxLib.Workers
 
         private static readonly List<OlxConfig> Configs = new List<OlxConfig>
         {
-            new OlxConfig(OlxType.Ua, "http://olx.ua/sitemap.xml", "PlaceHereAdvdataurl{0}",
-                "PlaceHereAdvcontacturl{0}"),
-            new OlxConfig(OlxType.Uz, "http://olx.uz/sitemap.xml", "PlaceHereAdvdataurl{0}",
-                "PlaceHereAdvcontacturl{0}"),
-            new OlxConfig(OlxType.Kz, "http://www.olx.kz/sitemap.xml", "PlaceHereAdvdataurl{0}",
-                "PlaceHereAdvcontacturl{0}"),
-            new OlxConfig(OlxType.By, "https://www.olx.by/sitemap.xml", "PlaceHereAdvdataurl{0}",
-                "PlaceHereAdvcontacturl{0}")
+            new OlxConfig(
+                    OlxType.Ua, 
+                    "http://olx.ua/sitemap.xml", 
+                    "PlaceHereAdvdataurl{0}",
+                    "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
+                ),
+
+            new OlxConfig(
+                    OlxType.Uz, 
+                    "http://olx.uz/sitemap.xml", 
+                    "PlaceHereAdvdataurl{0}",
+                    "PlaceHereAdvcontacturl{0}"
+                ),
+
+            new OlxConfig(
+                    OlxType.Kz, 
+                    "http://www.olx.kz/sitemap.xml", 
+                    "PlaceHereAdvdataurl{0}",
+                    "PlaceHereAdvcontacturl{0}"
+                ),
+
+            new OlxConfig(
+                    OlxType.By, 
+                    "https://www.olx.by/sitemap.xml", 
+                    "PlaceHereAdvdataurl{0}",
+                    "PlaceHereAdvcontacturl{0}"
+                )
         };
 
         protected BaseWorker(IServiceProvider serviceProvider)
