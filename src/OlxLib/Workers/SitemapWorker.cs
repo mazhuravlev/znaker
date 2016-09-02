@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Hangfire;
 using OlxLib.Entities;
 using OlxLib.Utils;
 
@@ -17,7 +18,7 @@ namespace OlxLib.Workers
         {
             _db = parserContext;
         }
-
+        [Queue("Sitemap download")]
         public string Run(OlxType olxType)
         {
             _config = BaseWorker.GetOlxConfig(olxType);
