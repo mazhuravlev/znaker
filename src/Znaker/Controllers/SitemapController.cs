@@ -30,7 +30,7 @@ namespace Znaker.Controllers
             {
                 model.Add(new SitemapIndexModel
                 {
-                    Loc = $"https://znaker.ru/sitemap_{i + 1}.xml",
+                    Loc = $"https://znaker.ru/sitemap/sitemap_{i + 1}.xml",
                     Lastmod =
                         _db.Contacts.Skip(ContactsBySitemap * i)
                             .Take(ContactsBySitemap)
