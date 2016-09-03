@@ -26,11 +26,9 @@ namespace OlxMigrationService.Migrations
 
                     b.Property<int?>("ContactsHttpStatusCode");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2016, 9, 2, 17, 20, 43, 909, DateTimeKind.Local));
+                    b.Property<DateTime>("CreatedAt");
 
-                    b.Property<int>("OlxResponse");
+                    b.Property<int?>("ExportJobId");
 
                     b.Property<int>("OlxType");
 
@@ -39,6 +37,9 @@ namespace OlxMigrationService.Migrations
                     b.Property<DateTime?>("UpdatedAt");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ExportJobId")
+                        .IsUnique();
 
                     b.HasIndex("OlxType", "AdvId")
                         .IsUnique();
@@ -59,8 +60,6 @@ namespace OlxMigrationService.Migrations
                     b.Property<int>("DownloadJobId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DownloadJobId");
 
                     b.ToTable("ExportJobs");
                 });
@@ -84,12 +83,11 @@ namespace OlxMigrationService.Migrations
                     b.ToTable("ParserMeta");
                 });
 
-            modelBuilder.Entity("OlxLib.Entities.ExportJob", b =>
+            modelBuilder.Entity("OlxLib.Entities.DownloadJob", b =>
                 {
-                    b.HasOne("OlxLib.Entities.DownloadJob", "DownloadJob")
-                        .WithMany()
-                        .HasForeignKey("DownloadJobId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("OlxLib.Entities.ExportJob", "ExportJob")
+                        .WithOne("DownloadJob")
+                        .HasForeignKey("OlxLib.Entities.DownloadJob", "ExportJobId");
                 });
         }
     }

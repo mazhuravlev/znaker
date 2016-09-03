@@ -78,7 +78,8 @@ namespace OlxLib.Workers
                         .Select(id => new DownloadJob
                         {
                             AdvId = id,
-                            OlxType = _config.OlxType
+                            OlxType = _config.OlxType,
+                            CreatedAt = DateTime.Now
                         }
                     )
                 );
