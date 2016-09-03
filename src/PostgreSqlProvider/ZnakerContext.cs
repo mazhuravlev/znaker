@@ -24,12 +24,15 @@ namespace PostgreSqlProvider
                 e.HasIndex(c => new { c.ContactType, c.Identity }).IsUnique();
                 e.Property(c => c.Identity).IsRequired().HasColumnType("Varchar(40)");
             });
-
+            b.Entity<Contact>().Property(c => c.CreatedOn).HasDefaultValue(DateTime.Now);
+            b.Entity<Contact>().Property(c => c.UpdatedOn).HasDefaultValue(DateTime.Now);
+            
             b.Entity<Entry>(e =>
             {
                 e.Property(c => c.IdOnSource).IsRequired().HasColumnType("Varchar(32)");
                 e.HasIndex(c => new { c.SourceId, c.IdOnSource }).IsUnique();
             });
+            b.Entity<Entry>().Property(e => e.CreatedOn).HasDefaultValue(DateTime.Now);
 
             b.Entity<EntryContact>(e =>
             {
