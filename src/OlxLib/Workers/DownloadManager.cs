@@ -150,17 +150,29 @@ namespace OlxLib.Workers
                     using (var db = GetParserContext())
                     {
                         var job = db.DownloadJobs.FirstOrDefault(c => c.Id == result.DownloadJob.Id);
+                        if (job == null)
+                        {
+                            continue; // but how?
+                        }
+                        job.UpdatedAt = result.DownloadJob.UpdatedAt;
+                        job.AdHttpStatusCode = result.DownloadJob.AdHttpStatusCode;
+                        job.ContactsHttpStatusCode = result.DownloadJob.ContactsHttpStatusCode;
+                        job.ProcessedAt = result.DownloadJob.ProcessedAt;
+                        if (result.OlxAdvert != null)
+                        {
+                            job.ExportJob = new ExportJob
+                            {
+                                CreateAt = DateTime.Now,
+                                Data = result.OlxAdvert
+                            };
+                        }
 
-
-                        //db.DownloadJobs.Attach(result);
                         db.SaveChanges();
                     }
                 }
                 Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken).Wait(cancellationToken);
             }
         }
-
-
 
         [Queue("Download worker")]
         [AutomaticRetry(Attempts = 0)]

@@ -9,24 +9,18 @@ namespace OlxMigrationService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DownloadJobs",
+                name: "ExportJobs",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    AdHttpStatusCode = table.Column<int>(nullable: true),
-                    AdvId = table.Column<int>(nullable: false),
-                    ContactsHttpStatusCode = table.Column<int>(nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2016, 9, 2, 17, 20, 43, 909, DateTimeKind.Local))
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    OlxResponse = table.Column<int>(nullable: false),
-                    OlxType = table.Column<int>(nullable: false),
-                    ProcessedAt = table.Column<DateTime>(nullable: true),
-                    UpdatedAt = table.Column<DateTime>(nullable: true)
+                    CreateAt = table.Column<DateTime>(nullable: false),
+                    Data = table.Column<string>(nullable: true),
+                    DownloadJobId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DownloadJobs", x => x.Id);
+                    table.PrimaryKey("PK_ExportJobs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -45,36 +39,42 @@ namespace OlxMigrationService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExportJobs",
+                name: "DownloadJobs",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    CreateAt = table.Column<DateTime>(nullable: false),
-                    Data = table.Column<string>(nullable: true),
-                    DownloadJobId = table.Column<int>(nullable: false)
+                    AdHttpStatusCode = table.Column<int>(nullable: true),
+                    AdvId = table.Column<int>(nullable: false),
+                    ContactsHttpStatusCode = table.Column<int>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ExportJobId = table.Column<int>(nullable: true),
+                    OlxType = table.Column<int>(nullable: false),
+                    ProcessedAt = table.Column<DateTime>(nullable: true),
+                    UpdatedAt = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExportJobs", x => x.Id);
+                    table.PrimaryKey("PK_DownloadJobs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ExportJobs_DownloadJobs_DownloadJobId",
-                        column: x => x.DownloadJobId,
-                        principalTable: "DownloadJobs",
+                        name: "FK_DownloadJobs_ExportJobs_ExportJobId",
+                        column: x => x.ExportJobId,
+                        principalTable: "ExportJobs",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DownloadJobs_ExportJobId",
+                table: "DownloadJobs",
+                column: "ExportJobId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DownloadJobs_OlxType_AdvId",
                 table: "DownloadJobs",
                 columns: new[] { "OlxType", "AdvId" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExportJobs_DownloadJobId",
-                table: "ExportJobs",
-                column: "DownloadJobId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ParserMeta_OlxType_Key",
@@ -86,13 +86,13 @@ namespace OlxMigrationService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ExportJobs");
+                name: "DownloadJobs");
 
             migrationBuilder.DropTable(
                 name: "ParserMeta");
 
             migrationBuilder.DropTable(
-                name: "DownloadJobs");
+                name: "ExportJobs");
         }
     }
 }

@@ -20,7 +20,7 @@ namespace OlxLib
             b.Entity<DownloadJob>(
                 dj => dj.HasIndex(c => new {c.OlxType, c.AdvId}).IsUnique()
             );
-            b.Entity<DownloadJob>().Property(dj => dj.CreatedAt).HasDefaultValue(DateTime.Now);
+            //b.Entity<DownloadJob>().Property(dj => dj.CreatedAt).HasDefaultValue(DateTime.Now);
         }
     }
 }
