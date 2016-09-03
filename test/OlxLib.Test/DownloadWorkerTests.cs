@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Net.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OlxLib.Workers;
@@ -11,8 +13,10 @@ namespace OlxLib.Test
         [Fact]
         public void TestRun()
         {
-            var worker = new DownloadWorker(CreateServiceProvider().GetService<ParserContext>());
-            worker.Run(OlxType.Ua);
+            var parserContex = CreateServiceProvider().GetService<ParserContext>();
+            var worker = new DownloadWorker(new HttpClient());
+            var downloadResult = worker.Run(parserContex.DownloadJobs.Skip(5).FirstOrDefault(dj => dj.OlxType == OlxType.Ua && !dj.ProcessedAt.HasValue));
+            Console.WriteLine("OK!");
         }
 
         private static IServiceProvider CreateServiceProvider()
