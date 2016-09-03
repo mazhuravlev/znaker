@@ -164,7 +164,7 @@ namespace MyToPg
                                 {
                                     CreatedOn = data.CreatedAt,
                                     IdOnSource = data.IdAtSource,
-                                    SourceId = (int) data.Source,
+                                    SourceId = data.Source,
                                     Text = data.Data
                                 }
                             });
