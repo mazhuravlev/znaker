@@ -29,6 +29,7 @@ namespace MigrationService.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
+                    SiteUrl = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -45,18 +46,17 @@ namespace MigrationService.Migrations
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     IdOnSource = table.Column<string>(type: "Varchar(32)", nullable: false),
                     SourceId = table.Column<int>(nullable: false),
-                    SourceId1 = table.Column<int>(nullable: true),
                     Text = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Entries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Entries_Sources_SourceId1",
-                        column: x => x.SourceId1,
+                        name: "FK_Entries_Sources_SourceId",
+                        column: x => x.SourceId,
                         principalTable: "Sources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,9 +97,9 @@ namespace MigrationService.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Entries_SourceId1",
+                name: "IX_Entries_SourceId",
                 table: "Entries",
-                column: "SourceId1");
+                column: "SourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Entries_SourceId_IdOnSource",

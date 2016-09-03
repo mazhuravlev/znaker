@@ -8,8 +8,8 @@ using PostgreSqlProvider;
 namespace MigrationService.Migrations
 {
     [DbContext(typeof(ZnakerContext))]
-    [Migration("20160902000331_init")]
-    partial class init
+    [Migration("20160902233941_insert_source_data_1_to_5")]
+    partial class insert_source_data_1_to_5
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -54,13 +54,11 @@ namespace MigrationService.Migrations
 
                     b.Property<int>("SourceId");
 
-                    b.Property<int?>("SourceId1");
-
                     b.Property<string>("Text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceId1");
+                    b.HasIndex("SourceId");
 
                     b.HasIndex("SourceId", "IdOnSource")
                         .IsUnique();
@@ -90,6 +88,8 @@ namespace MigrationService.Migrations
                 {
                     b.Property<int>("Id");
 
+                    b.Property<string>("SiteUrl");
+
                     b.Property<string>("Title");
 
                     b.HasKey("Id");
@@ -101,7 +101,8 @@ namespace MigrationService.Migrations
                 {
                     b.HasOne("PostgreSqlProvider.Entities.Source", "Source")
                         .WithMany("Entries")
-                        .HasForeignKey("SourceId1");
+                        .HasForeignKey("SourceId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PostgreSqlProvider.Entities.EntryContact", b =>
