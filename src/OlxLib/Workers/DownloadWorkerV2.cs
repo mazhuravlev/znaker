@@ -20,6 +20,7 @@ namespace OlxLib.Workers
         private readonly ConcurrentQueue<DownloadJob> _jobList = new ConcurrentQueue<DownloadJob>();
         private readonly ConcurrentQueue<DownloadJob> _processingList = new ConcurrentQueue<DownloadJob>();
         private readonly ConcurrentQueue<DownloadJob> _submittingList = new ConcurrentQueue<DownloadJob>();
+        private Task [] _tasks;
 
         private const int QuenueSize = 30;
         public DownloadWorkerV2(IServiceProvider serviceProvider) : base(serviceProvider) { }
@@ -30,20 +31,48 @@ namespace OlxLib.Workers
         [Queue("Download manager")]
         public void Run(OlxType [] olxTypes, IJobCancellationToken cancellationToken)
         {
-            if (olxTypes == null || !olxTypes.Any())
-            {
-                throw new ArgumentException("Olxtypes not provided");
-            }
-            var jobManagerCanCancellationToken = new CancellationTokenSource();
-            Task.Run(() => QueueManager(olxTypes, jobManagerCanCancellationToken.Token), jobManagerCanCancellationToken.Token);
-            Task.Run(() => JobSubmitter(jobManagerCanCancellationToken.Token), jobManagerCanCancellationToken.Token);
+            var ct = new CancellationTokenSource();
+            Run(olxTypes, ct.Token);
 
             while (true)
             {
                 if (cancellationToken != null && cancellationToken.ShutdownToken.IsCancellationRequested)
                 {
-                    jobManagerCanCancellationToken.Cancel();
-                    break;
+                    ct.Cancel();
+                    if (_tasks != null)
+                    {
+                        Task.WaitAll(_tasks);
+                        return;
+                    }
+                }
+                Task.Delay(100, ct.Token).Wait(ct.Token);
+            }
+        }
+        //for test run
+        public void Run(OlxType[] olxTypes, CancellationToken cancellationToken)
+        {
+            if (olxTypes == null || !olxTypes.Any())
+            {
+                throw new ArgumentException("Olxtypes not provided");
+            }
+
+            _tasks = new[]
+            {
+                JobManager(olxTypes, cancellationToken),
+                ProcessingManager(olxTypes, cancellationToken),
+                JobSubmitter(cancellationToken)
+            };
+
+            Task.WaitAll(_tasks, cancellationToken);
+        }
+
+        private Task JobManager(OlxType[] olxTypes, CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return Task.CompletedTask;
                 }
 
                 using (var db = GetParserContext())
@@ -66,24 +95,17 @@ namespace OlxLib.Workers
                     }
                 }
 
-                for (var i = 0; i < 20; i++)
-                {
-                    if (cancellationToken != null && cancellationToken.ShutdownToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
-                    Task.Delay(TimeSpan.FromSeconds(1), jobManagerCanCancellationToken.Token).Wait(jobManagerCanCancellationToken.Token);
-                }
+                Task.Delay(TimeSpan.FromSeconds(20), cancellationToken).Wait(cancellationToken);
             }
         }
 
-        protected void QueueManager(OlxType[] olxTypes, CancellationToken cancellationToken)
+        protected Task ProcessingManager(OlxType[] olxTypes, CancellationToken cancellationToken)
         {
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    break;
+                    return Task.CompletedTask;
                 }
 
                 foreach (var type in olxTypes)
@@ -98,7 +120,7 @@ namespace OlxLib.Workers
             }
         }
 
-        protected void JobSubmitter(CancellationToken cancellationToken)
+        protected Task JobSubmitter(CancellationToken cancellationToken)
         {
             while (true)
             {
@@ -107,7 +129,7 @@ namespace OlxLib.Workers
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        break;
+                        return Task.CompletedTask;
                     }
                     using (var db = GetParserContext())
                     {
@@ -122,7 +144,7 @@ namespace OlxLib.Workers
 
 
         [Queue("Download worker")]
-        protected string DownloadJob(int jobId)
+        protected string JobDownloader(int jobId)
         {
             //download, Dequeue from _processingList, Enqueue to _submittingList
 
