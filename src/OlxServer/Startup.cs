@@ -71,8 +71,8 @@ namespace OlxServer
             //run jobs
             if (env.IsDevelopment())
             {
-                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Yearly);
-                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunCleaner(7), Cron.Yearly);
+                RecurringJob.AddOrUpdate<ExportManager>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Yearly);
+                RecurringJob.AddOrUpdate<ExportManager>(z => z.RunCleaner(7), Cron.Yearly);
 
                 RecurringJob.AddOrUpdate<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null), Cron.Yearly);
 
@@ -80,8 +80,8 @@ namespace OlxServer
             }
             else
             {
-                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Minutely);
-                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunCleaner(7), Cron.HourInterval(12));
+                RecurringJob.AddOrUpdate<ExportManager>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Minutely);
+                RecurringJob.AddOrUpdate<ExportManager>(z => z.RunCleaner(7), Cron.HourInterval(12));
 
                 BackgroundJob.Enqueue<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null));
 
