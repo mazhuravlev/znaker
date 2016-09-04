@@ -8,7 +8,7 @@ using OlxLib;
 namespace OlxMigrationService.Migrations
 {
     [DbContext(typeof(ParserContext))]
-    [Migration("20160903182114_init")]
+    [Migration("20160904032323_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,12 +53,14 @@ namespace OlxMigrationService.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreateAt");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("DataSerialized")
                         .HasColumnName("Data");
 
                     b.Property<int>("DownloadJobId");
+
+                    b.Property<DateTime?>("ExportedAt");
 
                     b.HasKey("Id");
 

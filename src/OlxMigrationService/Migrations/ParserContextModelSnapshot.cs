@@ -52,12 +52,14 @@ namespace OlxMigrationService.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreateAt");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("DataSerialized")
                         .HasColumnName("Data");
 
                     b.Property<int>("DownloadJobId");
+
+                    b.Property<DateTime?>("ExportedAt");
 
                     b.HasKey("Id");
 

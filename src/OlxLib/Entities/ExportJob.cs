@@ -33,6 +33,6 @@ namespace OlxLib.Entities
             }
         } 
         public DateTime CreatedAt { get; set; }
-        public DateTime ExportedAt { get; set; }
+        public DateTime? ExportedAt { get; set; }
     }
 }

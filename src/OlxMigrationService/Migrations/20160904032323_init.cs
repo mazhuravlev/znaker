@@ -14,9 +14,10 @@ namespace OlxMigrationService.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    CreateAt = table.Column<DateTime>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
                     Data = table.Column<string>(nullable: true),
-                    DownloadJobId = table.Column<int>(nullable: false)
+                    DownloadJobId = table.Column<int>(nullable: false),
+                    ExportedAt = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
