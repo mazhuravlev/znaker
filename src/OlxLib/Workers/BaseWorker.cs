@@ -35,9 +35,9 @@ namespace OlxLib.Workers
 
             new OlxConfig(
                     OlxType.By, 
-                    "https://www.olx.by/sitemap.xml", 
-                    "PlaceHereAdvdataurl{0}",
-                    "PlaceHereAdvcontacturl{0}"
+                    "https://www.olx.by/sitemap.xml",
+                    "https://ssl.olx.by/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
+                    "https://ssl.olx.by/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
                 )
         };
 
