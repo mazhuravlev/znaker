@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using Infrastructure;
 using Newtonsoft.Json;
@@ -40,6 +41,10 @@ namespace OlxLib.Workers
             }
             else
             {
+                if (adResponse.StatusCode == HttpStatusCode.NotFound)
+                {
+                    downloadJob.ProcessedAt = DateTime.Now;;
+                }
                 return downloadResult;
             }
             var contactsResponse = _client.GetAsync(config.GetAdvertContactUrl(downloadJob.AdvId)).Result;
