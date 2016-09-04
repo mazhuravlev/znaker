@@ -35,10 +35,7 @@ namespace OlxLib.Workers
             var exportWorker = new ExportWorker(_znakerContext);
             foreach (var job in exportJobs)
             {
-                if (cancellationToken != null && cancellationToken.ShutdownToken.IsCancellationRequested)
-                {
-                    break;
-                }
+                cancellationToken?.ThrowIfCancellationRequested();
                 exportWorker.Run(job);
                 try
                 {

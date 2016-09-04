@@ -19,13 +19,18 @@ namespace OlxLib.Workers
     public class DownloadManager : BaseWorker
     {
         private readonly ConcurrentQueue<DownloadJob> _waitingList = new ConcurrentQueue<DownloadJob>();
-        private readonly ConcurrentDictionary<int, DownloadJob> _processingList = new ConcurrentDictionary<int, DownloadJob>();
+
+        private readonly ConcurrentDictionary<int, DownloadJob> _processingList =
+            new ConcurrentDictionary<int, DownloadJob>();
+
         private readonly ConcurrentQueue<OlxDownloadResult> _submittingList = new ConcurrentQueue<OlxDownloadResult>();
         private static DownloadWorker DownloadWorker => new DownloadWorker(new HttpClient());
         private const int QuenueSize = 100;
         private Task[] _tasks;
 
-        public DownloadManager(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public DownloadManager(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
 
 
 
@@ -37,18 +42,26 @@ namespace OlxLib.Workers
             var cts = new CancellationTokenSource();
             Run(olxType, cts.Token);
 
-            while (true)
+            try
             {
-                if (cancellationToken != null && cancellationToken.ShutdownToken.IsCancellationRequested)
+                while (true)
                 {
-                    cts.Cancel();
-                    if (_tasks != null)
-                    {
-                        Task.WaitAll(_tasks);
-                        return;
-                    }
+                    cancellationToken?.ThrowIfCancellationRequested();
+                    Task.Delay(200, cts.Token).Wait(cts.Token);
                 }
-                Task.Delay(100, cts.Token).Wait(cts.Token);
+            }
+            catch (Exception)
+            {
+                cts.Cancel();
+                try
+                {
+                    Task.WaitAll(_tasks);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+                throw;
             }
         }
         //for test run
@@ -91,7 +104,6 @@ namespace OlxLib.Workers
                                     c.OlxType == olxType &&
                                     c.ProcessedAt.HasValue == false
                                 )
-                                .OrderBy(c => c.CreatedAt)
                                 .Take(QuenueSize)
                                 .ToList();
 
