@@ -17,6 +17,10 @@ namespace OlxLib.Workers
 
         public Entry Run(ExportJob exportJob)
         {
+            if (null == exportJob.DownloadJob)
+            {
+                throw new Exception("Download job is null");
+            }
             var entry = new Entry
             {
                 Text = exportJob.Data.Text,
