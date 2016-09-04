@@ -73,13 +73,26 @@ namespace OlxServer
 
 
             //run jobs
+            if (env.IsDevelopment())
+            {
+                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Yearly);
+                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunCleaner(7), Cron.Yearly);
 
-            RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Minutely);
-            RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunCleaner(7), Cron.HourInterval(12));
+                RecurringJob.AddOrUpdate<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null), Cron.Yearly);
 
-            BackgroundJob.Enqueue<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null));
+                RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.Yearly);
+            }
+            else
+            {
+                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Minutely);
+                RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunCleaner(7), Cron.HourInterval(12));
 
-            RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.HourInterval(6));
+                BackgroundJob.Enqueue<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null));
+
+                RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.HourInterval(6));
+            }
+
+
             //BackgroundJob.Enqueue<SitemapWorker>(z => z.Run(OlxType.Ua));
 
             /*RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Kz), Cron.HourInterval(8));
