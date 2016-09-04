@@ -168,6 +168,7 @@ namespace OlxLib.Workers
                             job.ExportJob = new ExportJob
                             {
                                 CreatedAt = DateTime.Now,
+                                DownloadJob = job,
                                 Data = result.OlxAdvert
                             };
                         }

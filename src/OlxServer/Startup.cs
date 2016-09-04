@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql.NetCore;
-using Hangfire.Server;
 using OlxLib.Workers;
 using PostgreSqlProvider;
 
@@ -44,7 +40,7 @@ namespace OlxServer
             services.AddDbContext<ParserContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ParserConnectionString"]), ServiceLifetime.Transient);
             services.AddDbContext<ZnakerContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
 
-            services.AddTransient<ExportWorker>();
+            services.AddTransient<ExportManager>();
             services.AddTransient<SitemapWorker>();
             services.AddSingleton<DownloadManager>();
 
@@ -74,12 +70,12 @@ namespace OlxServer
 
             //run jobs
 
-            RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Minutely);
-            RecurringJob.AddOrUpdate<ExportWorker>(z => z.RunCleaner(7), Cron.HourInterval(12));
+            RecurringJob.AddOrUpdate<ExportManager>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Minutely);
+            //RecurringJob.AddOrUpdate<ExportManager>(z => z.RunCleaner(7), Cron.HourInterval(12));
 
-            BackgroundJob.Enqueue<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null));
+            //BackgroundJob.Enqueue<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null));
 
-            RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.HourInterval(6));
+            //RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.HourInterval(6));
             //BackgroundJob.Enqueue<SitemapWorker>(z => z.Run(OlxType.Ua));
 
             /*RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Kz), Cron.HourInterval(8));
