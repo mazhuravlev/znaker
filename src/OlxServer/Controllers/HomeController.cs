@@ -12,5 +12,10 @@ namespace OlxServer.Controllers
         {
             return View();
         }
+
+        public IActionResult Stats()
+        {
+            return View();
+        }
     }
 }
