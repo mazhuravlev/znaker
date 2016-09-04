@@ -20,7 +20,7 @@ namespace OlxLib.Workers
             _parserContext = parserContext;
         }
 
-        [Queue("Export manager")]
+        [Queue("export_manager")]
         [DisableConcurrentExecution(600)]
         public string RunExport(IJobCancellationToken cancellationToken, int exportLimit)
         {
@@ -84,7 +84,7 @@ namespace OlxLib.Workers
             return $"exported {expoted}/{exportLimit}";
         }
 
-        [Queue("Export manager")]
+        [Queue("export_manager")]
         public string RunCleaner(int olderThanDays)
         {
             return _parserContext.Database.ExecuteSqlCommand($"DELETE FROM public.\"ExportJobs\" WHERE \"CreateAt\" < '{DateTime.Now.AddDays(-olderThanDays):yyyy-MM-dd HH:mm:ss}'").ToString();

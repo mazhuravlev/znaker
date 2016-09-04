@@ -30,7 +30,8 @@ namespace OlxLib.Workers
 
 
         //longruning task
-        [Queue("Download manager")]
+        [Queue("download_manager")]
+        [AutomaticRetry(Attempts = 0)]
         public void Run(OlxType olxType, IJobCancellationToken cancellationToken)
         {
             var cts = new CancellationTokenSource();
@@ -53,21 +54,24 @@ namespace OlxLib.Workers
         //for test run
         public void Run(OlxType olxType, CancellationToken cancellationToken)
         {
-            _tasks = new[]
-            {
-                JobManager(olxType, cancellationToken),
-                ProcessingManager(olxType, cancellationToken),
-                JobSubmitter(cancellationToken),
-            };
+            _tasks = new Task[3];
+            _tasks[0] = new Task(() => ProcessingManager(cancellationToken), cancellationToken);
+            _tasks[0].Start();
+
+            _tasks[1] = new Task(() => JobManager(olxType, cancellationToken), cancellationToken);
+            _tasks[1].Start();
+
+            _tasks[2] = new Task(() => JobSubmitter(cancellationToken), cancellationToken);
+            _tasks[2].Start();
         }
 
-        private Task JobManager(OlxType olxType, CancellationToken cancellationToken)
+        private void JobManager(OlxType olxType, CancellationToken cancellationToken)
         {
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    return Task.CompletedTask;
+                    return;
                 }
 
                 using (var db = GetParserContext())
@@ -88,7 +92,8 @@ namespace OlxLib.Workers
                                     c.ProcessedAt.HasValue == false
                                 )
                                 .OrderBy(c => c.CreatedAt)
-                                .Take(QuenueSize);
+                                .Take(QuenueSize)
+                                .ToList();
 
                         if (!list.Any())
                         {
@@ -109,13 +114,13 @@ namespace OlxLib.Workers
             }
         }
 
-        protected Task ProcessingManager(OlxType olxType, CancellationToken cancellationToken)
+        private void ProcessingManager(CancellationToken cancellationToken)
         {
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    return Task.CompletedTask;
+                    return;
                 }
 
                 var processingJobsCount = _processingList.Count;
@@ -136,7 +141,7 @@ namespace OlxLib.Workers
             }
         }
 
-        protected Task JobSubmitter(CancellationToken cancellationToken)
+        protected void JobSubmitter(CancellationToken cancellationToken)
         {
             while (true)
             {
@@ -145,7 +150,7 @@ namespace OlxLib.Workers
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
                     using (var db = GetParserContext())
                     {
@@ -174,9 +179,9 @@ namespace OlxLib.Workers
             }
         }
 
-        [Queue("Download worker")]
+        [Queue("download_worker")]
         [AutomaticRetry(Attempts = 0)]
-        protected string JobDownloader(int jobId)
+        public string JobDownloader(int jobId)
         {
             DownloadJob job;
             if (!_processingList.TryRemove(jobId, out job))

@@ -46,7 +46,7 @@ namespace OlxServer
 
             services.AddTransient<ExportWorker>();
             services.AddTransient<SitemapWorker>();
-            services.AddSingleton<DownloadWorker>();
+            services.AddSingleton<DownloadManager>();
 
 
 
@@ -61,7 +61,8 @@ namespace OlxServer
             app.UseHangfireServer(new BackgroundJobServerOptions
             {
                 ServerName = "localServer",
-                WorkerCount = Environment.ProcessorCount * 5
+                WorkerCount = Environment.ProcessorCount * 5,
+                Queues = new []{ "sitemap_download", "export_manager", "download_manager", "download_worker" }
             });
             app.UseHangfireDashboard(options: new DashboardOptions
             {
@@ -79,7 +80,7 @@ namespace OlxServer
             BackgroundJob.Enqueue<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null));
 
             RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.HourInterval(6));
-            BackgroundJob.Enqueue<SitemapWorker>(z => z.Run(OlxType.Ua));
+            //BackgroundJob.Enqueue<SitemapWorker>(z => z.Run(OlxType.Ua));
 
             /*RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Kz), Cron.HourInterval(8));
             BackgroundJob.Schedule<SitemapWorker>(z => z.Run(OlxType.Kz), TimeSpan.FromMinutes(5));
