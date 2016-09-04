@@ -87,7 +87,7 @@ namespace OlxLib.Workers
         [Queue("export_manager")]
         public string RunCleaner(int olderThanDays)
         {
-            return _parserContext.Database.ExecuteSqlCommand($"DELETE FROM public.\"ExportJobs\" WHERE \"CreateAt\" < '{DateTime.Now.AddDays(-olderThanDays):yyyy-MM-dd HH:mm:ss}'").ToString();
+            return _parserContext.Database.ExecuteSqlCommand($"DELETE FROM public.\"ExportJobs\" WHERE \"ExportedAt\" < '{DateTime.Now.AddDays(-olderThanDays):yyyy-MM-dd HH:mm:ss}'").ToString();
         }
     }
 }
