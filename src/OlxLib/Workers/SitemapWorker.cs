@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Hangfire;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 using OlxLib.Entities;
 using OlxLib.Utils;
 
@@ -13,6 +18,7 @@ namespace OlxLib.Workers
     {
         private readonly ParserContext _db;
         private OlxConfig _config;
+        private HttpClient _client;
 
         public SitemapWorker(ParserContext parserContext)
         {
@@ -22,10 +28,15 @@ namespace OlxLib.Workers
         public string Run(OlxType olxType)
         {
             _config = BaseWorker.GetOlxConfig(olxType);
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36");
+            var sitemapResponse = _client.GetAsync(_config.GetSitemapUrl()).Result;
+            if (!sitemapResponse.IsSuccessStatusCode)
+            {
+                throw new Exception("Sitemap request failed");
+            }
             var sitemaps = SitemapUtils.ParseIndexSitemap(
-                XDocument.Parse(
-                    HttpUtils.DownloadString(_config.GetSitemapUrl()).Result
-                )
+                XDocument.Parse(sitemapResponse.Content.ReadAsStringAsync().Result)
             );
             var adsCount = sitemaps.Sum(sitemap => HandleSitemap(sitemap, _config.OlxType));
             return $"Count: {adsCount}";
@@ -54,10 +65,13 @@ namespace OlxLib.Workers
 
         private int ProcessSitemap(SitemapModel sitemap)
         {
+            var sitemapResponse = _client.GetAsync(sitemap.Loc).Result;
+            if (!sitemapResponse.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Sitemap request failed: " + sitemap.Loc);
+            }
             var ids = SitemapUtils.GetIdsFromSitemap(
-                XDocument.Parse(
-                    HttpUtils.DownloadString(sitemap.Loc).Result
-                )
+                XDocument.Parse(sitemapResponse.Content.ReadAsStringAsync().Result)
             ).ToList();
             CreateDownloadJobs(ids);
             return ids.Count;

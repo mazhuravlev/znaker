@@ -18,8 +18,8 @@ namespace OlxLib.Workers
         private readonly ConcurrentDictionary<int, JobItem> _processingList = new ConcurrentDictionary<int, JobItem>();
 
         private readonly ConcurrentQueue<OlxDownloadResult> _submittingList = new ConcurrentQueue<OlxDownloadResult>();
-        private static DownloadWorker DownloadWorker => new DownloadWorker(new HttpClient());
-        private const int QuenueSize = 300;
+        private static DownloadWorker DownloadWorker => new DownloadWorker(GetClient());
+        private const int QueueSize = 300;
         private const int QueueThrottleSec = 360;
         private Task[] _tasks;
 
@@ -28,7 +28,12 @@ namespace OlxLib.Workers
         {
         }
 
-
+        private static HttpClient GetClient()
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36");
+            return client;
+        }
 
         //longruning task
         [Queue("download_manager")]
@@ -91,7 +96,7 @@ namespace OlxLib.Workers
                                 .AsNoTracking()
                                 .OrderBy(c => c.CreatedAt)
                                 .Where(c => c.OlxType == olxType && c.ProcessedAt.HasValue == false)
-                                .Take(QuenueSize)
+                                .Take(QueueSize)
                                 .Select(c => new JobItem { JobId = c.Id, AdvId = c.AdvId, OlxType = c.OlxType})
                                 .ToList();
 
