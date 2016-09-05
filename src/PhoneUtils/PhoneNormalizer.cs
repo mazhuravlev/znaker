@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using OlxLib;
+using PhoneUtils.CountryRules;
 using Infrastructure;
-using PhoneNormalizer.CountryRules;
 
-namespace PhoneNormalizer
+namespace PhoneUtils
 {
     public class PhoneNormalizer
     {

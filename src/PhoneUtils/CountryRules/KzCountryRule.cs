@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
-
-namespace PhoneNormalizer.CountryRules
+﻿namespace PhoneUtils.CountryRules
 {
     public class KzCountryRule : AbstractCountryRule
     {

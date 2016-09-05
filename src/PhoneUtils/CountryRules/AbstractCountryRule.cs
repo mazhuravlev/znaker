@@ -1,4 +1,4 @@
-﻿namespace PhoneNormalizer.CountryRules
+﻿namespace PhoneUtils.CountryRules
 {
     public abstract class AbstractCountryRule
     {

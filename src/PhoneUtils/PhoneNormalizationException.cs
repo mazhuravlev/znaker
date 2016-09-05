@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PhoneNormalizer
+namespace PhoneUtils
 {
     public class PhoneNormalizationException : Exception
     {

@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace PhoneNormalizer.CountryRules
+namespace PhoneUtils.CountryRules
 {
     public class UaCountryRule : AbstractCountryRule
     {
