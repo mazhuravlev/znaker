@@ -74,9 +74,9 @@ namespace OlxServer
                 RecurringJob.AddOrUpdate<ExportManager>(z => z.RunExport(JobCancellationToken.Null, 500), Cron.Yearly);
                 RecurringJob.AddOrUpdate<ExportManager>(z => z.RunCleaner(7), Cron.Yearly);
 
-                RecurringJob.AddOrUpdate<DownloadManager>(z => z.Run(OlxType.Ua, JobCancellationToken.Null), Cron.Yearly);
+                RecurringJob.AddOrUpdate<DownloadManager>(z => z.Run(OlxType.By, JobCancellationToken.Null), Cron.Yearly);
 
-                RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.Ua), Cron.Yearly);
+                RecurringJob.AddOrUpdate<SitemapWorker>(z => z.Run(OlxType.By), Cron.Yearly);
             }
             else
             {

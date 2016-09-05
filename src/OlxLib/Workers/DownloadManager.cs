@@ -2,31 +2,27 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
-using Hangfire.Server;
-using Hangfire.Storage.Monitoring;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OlxLib.Entities;
 
 namespace OlxLib.Workers
 {
     public class DownloadManager : BaseWorker
     {
-        private readonly ConcurrentQueue<DownloadJob> _waitingList = new ConcurrentQueue<DownloadJob>();
+        private readonly ConcurrentQueue<JobItem> _waitingList = new ConcurrentQueue<JobItem>();
 
-        private readonly ConcurrentDictionary<int, DownloadJob> _processingList =
-            new ConcurrentDictionary<int, DownloadJob>();
+        private readonly ConcurrentDictionary<int, JobItem> _processingList = new ConcurrentDictionary<int, JobItem>();
 
         private readonly ConcurrentQueue<OlxDownloadResult> _submittingList = new ConcurrentQueue<OlxDownloadResult>();
         private static DownloadWorker DownloadWorker => new DownloadWorker(new HttpClient());
-        private const int QuenueSize = 100;
+        private const int QuenueSize = 300;
+        private const int QueueThrottleSec = 360;
         private Task[] _tasks;
+
 
         public DownloadManager(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -80,44 +76,41 @@ namespace OlxLib.Workers
 
         private void JobManager(OlxType olxType, CancellationToken cancellationToken)
         {
+            var queueThrottleList = new List<KeyValuePair<int, DateTime>>();
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
-
                 using (var db = GetParserContext())
                 {
                     if (!_waitingList.Any())
                     {
-                        var ids = new List<int>();
-                        ids.AddRange(_processingList.Keys);
-                        ids.AddRange(_submittingList.Select(c => c.DownloadJob.Id));
-
                         var list = db.DownloadJobs
                                 .AsNoTracking()
                                 .OrderBy(c => c.CreatedAt)
-                                .Where
-                                (c =>
-                                    ids.Contains(c.Id) == false &&
-                                    c.OlxType == olxType &&
-                                    c.ProcessedAt.HasValue == false
-                                )
+                                .Where(c => c.OlxType == olxType && c.ProcessedAt.HasValue == false)
                                 .Take(QuenueSize)
+                                .Select(c => new JobItem { JobId = c.Id, AdvId = c.AdvId, OlxType = c.OlxType})
                                 .ToList();
 
+                        //clean possable duplicates
+                        list.RemoveAll(c => queueThrottleList.Any(z => z.Key == c.JobId));
                         if (!list.Any())
                         {
                             //#ToDo time to redownload DownloadJobs with errors and other shit
+                            //list.RemoveAll(c => queueThrottleList.Any(z => z.Key == c.Id));
                         }
                         if (!list.Any()) // no new job, sleep
                         {
                             Task.Delay(TimeSpan.FromSeconds(60), cancellationToken).Wait(cancellationToken);
                         }
 
+                        queueThrottleList.RemoveAll(c => c.Value < DateTime.Now.AddSeconds(-QueueThrottleSec));
                         foreach (var job in list)
                         {
+                            queueThrottleList.Add(new KeyValuePair<int, DateTime>(job.JobId, DateTime.Now));
                             _waitingList.Enqueue(job);
                         }
                     }
@@ -140,17 +133,37 @@ namespace OlxLib.Workers
                 var jobsToAdd = Math.Max(0, degreeOfParallelism - processingJobsCount);
                 for (var i = 0; i < jobsToAdd; i++)
                 {
-                    DownloadJob job;
+                    JobItem job;
                     if (_waitingList.TryDequeue(out job))
                     {
-                        if (_processingList.TryAdd(job.Id, job))
+                        if (_processingList.TryAdd(job.JobId, job))
                         {
-                            BackgroundJob.Enqueue<DownloadManager>(c => c.JobDownloader(job.Id));
+                            BackgroundJob.Enqueue<DownloadManager>(c => c.JobDownloader(job.JobId));
                         }
                     }
                 }
                 Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken).Wait(cancellationToken);
             }
+        }
+
+        [Queue("download_worker")]
+        [AutomaticRetry(Attempts = 0)]
+        public string JobDownloader(int jobId)
+        {
+            JobItem job;
+            if (!_processingList.TryRemove(jobId, out job))
+            {
+                throw new Exception("job not found");
+            }
+
+            var res = DownloadWorker.Run(job.AdvId, job.OlxType);
+            res.JobId = jobId;
+            _submittingList.Enqueue(res);
+            if (res.AdHttpStatusCode.HasValue)
+            {
+                
+            }
+            return $"ad:{res.AdHttpStatusCode};c:{res.ContactsHttpStatusCode}";
         }
 
         protected void JobSubmitter(CancellationToken cancellationToken)
@@ -166,25 +179,23 @@ namespace OlxLib.Workers
                     }
                     using (var db = GetParserContext())
                     {
-                        var job = db.DownloadJobs.FirstOrDefault(c => c.Id == result.DownloadJob.Id);
+                        var job = db.DownloadJobs.FirstOrDefault(c => c.Id == result.JobId);
                         if (job == null)
                         {
                             continue; // but how?
                         }
-                        job.UpdatedAt = result.DownloadJob.UpdatedAt;
-                        job.AdHttpStatusCode = result.DownloadJob.AdHttpStatusCode;
-                        job.ContactsHttpStatusCode = result.DownloadJob.ContactsHttpStatusCode;
-                        job.ProcessedAt = result.DownloadJob.ProcessedAt;
+                        job.UpdatedAt = DateTime.Now;
+                        job.AdHttpStatusCode = result.AdHttpStatusCode;
+                        job.ContactsHttpStatusCode = result.ContactsHttpStatusCode;
+                        job.ProcessedAt = result.ProcessedAt;
                         if (result.OlxAdvert != null)
                         {
                             job.ExportJob = new ExportJob
                             {
                                 CreatedAt = DateTime.Now,
-                                DownloadJob = job,
                                 Data = result.OlxAdvert
                             };
                         }
-
                         db.SaveChanges();
                     }
                 }
@@ -192,19 +203,11 @@ namespace OlxLib.Workers
             }
         }
 
-        [Queue("download_worker")]
-        [AutomaticRetry(Attempts = 0)]
-        public string JobDownloader(int jobId)
+        protected class JobItem
         {
-            DownloadJob job;
-            if (!_processingList.TryRemove(jobId, out job))
-            {
-                throw new Exception("job not found");
-            }
-
-            var res = DownloadWorker.Run(job);
-            _submittingList.Enqueue(res);
-            return "ok";
+            public int JobId;
+            public int AdvId;
+            public OlxType OlxType;
         }
     }
 }

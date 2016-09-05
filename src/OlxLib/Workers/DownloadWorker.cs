@@ -6,7 +6,6 @@ using System.Net.Http;
 using Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OlxLib.Entities;
 using OlxLib.Utils;
 
 namespace OlxLib.Workers
@@ -20,21 +19,20 @@ namespace OlxLib.Workers
             _client = client;
         }
 
-        public OlxDownloadResult Run(DownloadJob downloadJob)
+        public OlxDownloadResult Run(int advId, OlxType olxType)
         {
-            var config = BaseWorker.GetOlxConfig(downloadJob.OlxType);
+            var config = BaseWorker.GetOlxConfig(olxType);
 
-            var downloadResult = new OlxDownloadResult
+            var result = new OlxDownloadResult
             {
-                DownloadJob = downloadJob,
-                OlxAdvert = null,
+                AdvId = advId,
+                OlxAdvert = null
             };
-            var adResponse = _client.GetAsync(config.GetAdvertDataUrl(downloadJob.AdvId)).Result;
-            downloadJob.AdHttpStatusCode = adResponse.StatusCode;
-            downloadJob.UpdatedAt = DateTime.Now;
+            var adResponse = _client.GetAsync(config.GetAdvertDataUrl(advId)).Result;
+            result.AdHttpStatusCode = adResponse.StatusCode;
             if (adResponse.IsSuccessStatusCode)
             {
-                downloadResult.OlxAdvert = new OlxAdvert
+                result.OlxAdvert = new OlxAdvert
                 {
                     Text = ExtractAdTextFromJsonString(adResponse.Content.ReadAsStringAsync().Result)
                 };
@@ -43,20 +41,18 @@ namespace OlxLib.Workers
             {
                 if (adResponse.StatusCode == HttpStatusCode.NotFound)
                 {
-                    downloadJob.ProcessedAt = DateTime.Now;;
+                    result.ProcessedAt = DateTime.Now;
                 }
-                return downloadResult;
+                return result;
             }
-            var contactsResponse = _client.GetAsync(config.GetAdvertContactUrl(downloadJob.AdvId)).Result;
-            downloadJob.ContactsHttpStatusCode = contactsResponse.StatusCode;
+            var contactsResponse = _client.GetAsync(config.GetAdvertContactUrl(advId)).Result;
+            result.ContactsHttpStatusCode = contactsResponse.StatusCode;
             if (contactsResponse.IsSuccessStatusCode)
             {
-                downloadResult.OlxAdvert.Contacts = ExtractAdContactsFromJsonString(contactsResponse.Content.ReadAsStringAsync().Result);
+                result.OlxAdvert.Contacts = ExtractAdContactsFromJsonString(contactsResponse.Content.ReadAsStringAsync().Result);
             }
-
-            downloadJob.ProcessedAt = DateTime.Now;
-
-            return downloadResult;
+            result.ProcessedAt = DateTime.Now;
+            return result;
         }
 
         private static List<KeyValuePair<ContactType, string>> ExtractAdContactsFromJsonString(string contactsJsonString)

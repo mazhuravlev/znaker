@@ -22,6 +22,7 @@ namespace OlxLib.Workers
 
         [Queue("export_manager")]
         [DisableConcurrentExecution(600)]
+        [AutomaticRetry(Attempts = 0)]
         public string RunExport(IJobCancellationToken cancellationToken, int exportLimit)
         {
             var exported = 0;

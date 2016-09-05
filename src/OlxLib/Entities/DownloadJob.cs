@@ -13,7 +13,6 @@ namespace OlxLib.Entities
         public DateTime? ProcessedAt { get; set; }
         public HttpStatusCode? AdHttpStatusCode { get; set; }
         public HttpStatusCode? ContactsHttpStatusCode { get; set; }
-        public int? ExportJobId { get; set; }
         public ExportJob ExportJob { get; set; }
     }
 }

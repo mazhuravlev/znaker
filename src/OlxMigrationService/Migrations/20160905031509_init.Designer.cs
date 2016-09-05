@@ -8,7 +8,7 @@ using OlxLib;
 namespace OlxMigrationService.Migrations
 {
     [DbContext(typeof(ParserContext))]
-    [Migration("20160904032323_init")]
+    [Migration("20160905031509_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,8 +29,6 @@ namespace OlxMigrationService.Migrations
 
                     b.Property<DateTime>("CreatedAt");
 
-                    b.Property<int?>("ExportJobId");
-
                     b.Property<int>("OlxType");
 
                     b.Property<DateTime?>("ProcessedAt");
@@ -38,9 +36,6 @@ namespace OlxMigrationService.Migrations
                     b.Property<DateTime?>("UpdatedAt");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExportJobId")
-                        .IsUnique();
 
                     b.HasIndex("OlxType", "AdvId")
                         .IsUnique();
@@ -64,6 +59,9 @@ namespace OlxMigrationService.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DownloadJobId")
+                        .IsUnique();
+
                     b.ToTable("ExportJobs");
                 });
 
@@ -86,11 +84,12 @@ namespace OlxMigrationService.Migrations
                     b.ToTable("ParserMeta");
                 });
 
-            modelBuilder.Entity("OlxLib.Entities.DownloadJob", b =>
+            modelBuilder.Entity("OlxLib.Entities.ExportJob", b =>
                 {
-                    b.HasOne("OlxLib.Entities.ExportJob", "ExportJob")
-                        .WithOne("DownloadJob")
-                        .HasForeignKey("OlxLib.Entities.DownloadJob", "ExportJobId");
+                    b.HasOne("OlxLib.Entities.DownloadJob", "DownloadJob")
+                        .WithOne("ExportJob")
+                        .HasForeignKey("OlxLib.Entities.ExportJob", "DownloadJobId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }
