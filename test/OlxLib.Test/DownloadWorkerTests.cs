@@ -15,7 +15,10 @@ namespace OlxLib.Test
         {
             var parserContex = CreateServiceProvider().GetService<ParserContext>();
             var worker = new DownloadWorker(new HttpClient());
-            var downloadResult = worker.Run(parserContex.DownloadJobs.Skip(5).FirstOrDefault(dj => dj.OlxType == OlxType.Ua && !dj.ProcessedAt.HasValue));
+            var downloadJob =
+                parserContex.DownloadJobs.Skip(5)
+                    .FirstOrDefault(dj => dj.OlxType == OlxType.Ua && !dj.ProcessedAt.HasValue);
+            var downloadResult = worker.Run(downloadJob.AdvId, downloadJob.OlxType);
             Console.WriteLine("OK!");
         }
 
