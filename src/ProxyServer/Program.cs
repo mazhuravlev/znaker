@@ -9,11 +9,15 @@ namespace ProxyServer
 {
     public class Program
     {
+        public const int ProxyPort = 5020;
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseUrls("http://localhost:5020")
+                .UseKestrel(c =>
+                {
+                    //c.UseConnectionLogging("KESTREL");
+                })
+                .UseUrls($"http://localhost:{ProxyPort}", "http://localhost:5030")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();

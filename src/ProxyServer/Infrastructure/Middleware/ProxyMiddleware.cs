@@ -2,10 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Security;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using NuGet.Configuration;
 using ProxyServer.Infrastructure.Services;
 
 namespace ProxyServer.Infrastructure.Middleware
@@ -14,7 +20,6 @@ namespace ProxyServer.Infrastructure.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ResolveProxy _resolveProxy;
-        private readonly HttpClient _httpClient;
 
         public ProxyMiddleware(RequestDelegate next, ResolveProxy resolveProxy)
         {
@@ -30,17 +35,16 @@ namespace ProxyServer.Infrastructure.Middleware
 
             _next = next;
             _resolveProxy = resolveProxy;
-            _httpClient = new HttpClient(new HttpClientHandler
-            {
-                //Proxy = new WebProxy("df")
-            });
+            
         }
 
         public async Task Invoke(HttpContext context)
         {
-            var options = _resolveProxy.GetEndPointProxyOptions();
-            
-
+            var httpClient = new HttpClient(new HttpClientHandler
+            {
+                Proxy = _resolveProxy.GetEndPointProxy(),
+                UseProxy = true
+            });
             var requestMessage = new HttpRequestMessage();
             if (!string.Equals(context.Request.Method, "GET", StringComparison.OrdinalIgnoreCase) &&
                 !string.Equals(context.Request.Method, "HEAD", StringComparison.OrdinalIgnoreCase) &&
@@ -60,11 +64,15 @@ namespace ProxyServer.Infrastructure.Middleware
                 }
             }
 
-            requestMessage.Headers.Host = options.Host + ":" + options.Port;
-            var uriString = $"{options.Scheme}://{options.Host}:{options.Port}{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
-            requestMessage.RequestUri = new Uri(uriString);
+
+            var httpRequest = context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpRequestFeature>();
+            requestMessage.Headers.Host = context.Request.Host.ToString();
+           
+            requestMessage.RequestUri = new Uri(httpRequest.RawTarget);
             requestMessage.Method = new HttpMethod(context.Request.Method);
-            using (var responseMessage = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
+            
+            
+            using (var responseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
             {
                 context.Response.StatusCode = (int)responseMessage.StatusCode;
                 foreach (var header in responseMessage.Headers)
