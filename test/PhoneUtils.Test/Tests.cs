@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using PhoneUtils;
-using PhoneUtils.CountryRules;
+using GrabberServer.Infrastructure.PhoneUtils;
+using GrabberServer.Infrastructure.PhoneUtils.CountryRules;
 using Xunit;
 using Assert = Xunit.Assert;
 
