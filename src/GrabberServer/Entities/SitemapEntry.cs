@@ -1,0 +1,12 @@
+﻿using System;
+using Infrastructure;
+
+namespace GrabberServer.Entities
+{
+    public class SitemapEntry
+    {
+        public SourceType SourceType;
+        public string Loc;
+        public string Lastmod;
+    }
+}
