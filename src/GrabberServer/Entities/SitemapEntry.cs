@@ -1,5 +1,4 @@
-﻿using System;
-using Infrastructure;
+﻿using Infrastructure;
 
 namespace GrabberServer.Entities
 {
@@ -8,5 +7,11 @@ namespace GrabberServer.Entities
         public SourceType SourceType;
         public string Loc;
         public string Lastmod;
+        public string DownloadedLastmod;
+
+        public void MarkDownloaded()
+        {
+            DownloadedLastmod = Lastmod;
+        }
     }
 }

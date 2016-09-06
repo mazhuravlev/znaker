@@ -1,31 +1,102 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using GrabberServer.Entities;
+using Infrastructure;
 
 namespace GrabberServer.Grabbers.Olx
 {
     public class OlxSitemapGrabber : ISitemapGrabber
     {
-        private OlxConfig _olxConfig;
+        private static readonly XNamespace Ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+        private static readonly Regex IdRegex = new Regex(@"ID([a-zA-Z0-9]+)");
+        private static readonly Regex AdsSitemapRegex = new Regex(@"sitemap-ads-(\d+)\.xml");
 
-        public OlxSitemapGrabber(OlxConfig olxConfig)
+        private readonly OlxConfig _config;
+        private readonly HttpClient _client;
+
+        public OlxSitemapGrabber(OlxConfig olxConfig, HttpClient httpClient)
         {
-            _olxConfig = olxConfig;
+            _config = olxConfig;
+            _client = httpClient;
         }
 
-        public Task GrabIndex()
+        public Task<List<SitemapEntry>> GrabIndex()
         {
-            throw new System.NotImplementedException();
+            return Task<List<SitemapEntry>>.Factory.StartNew(() =>
+            {
+                var sitemapResponse = _client.GetAsync(_config.GetSitemapUrl()).Result;
+                if (!sitemapResponse.IsSuccessStatusCode)
+                {
+                    throw new Exception("http: sitemap request failed");
+                }
+                return ParseIndexSitemap(
+                    XDocument.Parse(sitemapResponse.Content.ReadAsStringAsync().Result)
+                );
+            });
         }
 
-        public bool HasSitemapsToGrab()
+        public bool HasSitemapsToGrab(List<SitemapEntry> sitemaps)
         {
-            throw new System.NotImplementedException();
+            if (0 == sitemaps.Count)
+            {
+                return false;
+            }
+            return null != GetNextSitemap(sitemaps);
         }
 
-        public Task<List<SitemapEntry>> GrabNextSitemap()
+        public Task<SitemapGrabResult> GrabNextSitemap(List<SitemapEntry> sitemaps)
         {
-            throw new System.NotImplementedException();
+            return Task<SitemapGrabResult>.Factory.StartNew(() =>
+            {
+                var sitemap = GetNextSitemap(sitemaps);
+                if (null == sitemap)
+                {
+                    throw new Exception("no next sitemap");
+                }
+                var sitemapResponse = _client.GetAsync(sitemap.Loc).Result;
+                if (!sitemapResponse.IsSuccessStatusCode)
+                {
+                    throw new Exception("http sitemap request failed");
+                }
+                var adIds = GetIdsFromSitemap(XDocument.Parse(sitemapResponse.Content.ReadAsStringAsync().Result));
+                return new SitemapGrabResult
+                {
+                    SitemapEntry = sitemap,
+                    AdIds = adIds
+                };
+            });
+        }
+
+        private static SitemapEntry GetNextSitemap(IEnumerable<SitemapEntry> sitemaps)
+        {
+            return sitemaps.First(s => s.Lastmod != s.DownloadedLastmod);
+        }
+
+        private static List<string> GetIdsFromSitemap(XDocument sitemapXdoc)
+        {
+            return sitemapXdoc.Root.Elements(Ns + "url")
+                .Select(u => u.Element(Ns + "loc").Value)
+                .Select(s => IdRegex.Match(s).Groups[1].Value)
+                .Select(id => IdUtils.DecryptOlxId(id).ToString())
+                .ToList();
+        }
+
+        private List<SitemapEntry> ParseIndexSitemap(XDocument indexSitemapXdoc)
+        {
+            return indexSitemapXdoc.Root.Elements(Ns + "sitemap")
+                .Where(s => AdsSitemapRegex.Match(s.Element(Ns + "loc").Value).Length > 0)
+                .Select(s => new SitemapEntry()
+                {
+                    SourceType = (SourceType) _config.OlxType,
+                    Loc = s.Element(Ns + "loc").Value,
+                    Lastmod = s.Element(Ns + "lastmod").Value
+                })
+                .ToList();
         }
     }
 }

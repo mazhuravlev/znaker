@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GrabberServer.Entities;
 
@@ -6,10 +7,10 @@ namespace GrabberServer.Grabbers
 {
     public interface ISitemapGrabber
     {
-        Task GrabIndex();
+        Task<List<SitemapEntry>> GrabIndex();
 
-        bool HasSitemapsToGrab();
+        bool HasSitemapsToGrab(List<SitemapEntry> sitemaps);
 
-        Task<List<SitemapEntry>> GrabNextSitemap();
+        Task<SitemapGrabResult> GrabNextSitemap(List<SitemapEntry> sitemaps);
     }
 }
