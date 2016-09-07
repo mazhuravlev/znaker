@@ -72,6 +72,11 @@ namespace GrabberServer.Grabbers.Olx
             });
         }
 
+        public SourceType GetSourceType()
+        {
+            return (SourceType) _config.OlxType;
+        }
+
         private static SitemapEntry GetNextSitemap(IEnumerable<SitemapEntry> sitemaps)
         {
             return sitemaps.First(s => s.Lastmod != s.DownloadedLastmod);
