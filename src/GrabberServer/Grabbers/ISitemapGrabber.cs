@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using GrabberServer.Entities;
+using Infrastructure;
 
 namespace GrabberServer.Grabbers
 {
@@ -12,5 +13,7 @@ namespace GrabberServer.Grabbers
         bool HasSitemapsToGrab(List<SitemapEntry> sitemaps);
 
         Task<SitemapGrabResult> GrabNextSitemap(List<SitemapEntry> sitemaps);
+
+        SourceType GetSourceType();
     }
 }
