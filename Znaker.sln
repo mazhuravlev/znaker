@@ -36,7 +36,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProxyServer", "src\ProxySer
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "GrabberServer", "src\GrabberServer\GrabberServer.xproj", "{4173FD0D-68E0-4A24-B7FB-383B3410A96E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OlxGrabber.Test", "OlxGrabber.Test\OlxGrabber.Test.xproj", "{D005D5E3-526E-4674-8644-1F9978C4D812}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OlxGrabber.Test", "test\OlxGrabber.Test\OlxGrabber.Test.xproj", "{D005D5E3-526E-4674-8644-1F9978C4D812}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
