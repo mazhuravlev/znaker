@@ -17,9 +17,9 @@ namespace GrabberServer.Grabbers.Olx
         private static readonly Regex AdsSitemapRegex = new Regex(@"sitemap-ads-(\d+)\.xml");
 
         private readonly OlxConfig _config;
-        private readonly HttpClient _client;
+        private readonly IGrabberHttpClient _client;
 
-        public OlxSitemapGrabber(OlxConfig olxConfig, HttpClient httpClient)
+        public OlxSitemapGrabber(OlxConfig olxConfig, IGrabberHttpClient httpClient)
         {
             _config = olxConfig;
             _client = httpClient;

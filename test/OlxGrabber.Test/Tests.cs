@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using GrabberServer.Entities;
+using GrabberServer.Grabbers;
 using GrabberServer.Grabbers.Olx;
 using Xunit;
 
@@ -35,7 +36,7 @@ namespace OlxGrabber.Test
 
         private static void TestWithConfig(OlxConfig config)
         {
-            var sitemapGrabber = new OlxSitemapGrabber(config, new HttpClient());
+            var sitemapGrabber = new OlxSitemapGrabber(config, new SimpleGrabberHttpClient());
             var sitemapIndex = sitemapGrabber.GrabIndex().Result;
             Assert.NotEmpty(sitemapIndex);
             Assert.IsType(typeof(SitemapEntry), sitemapIndex.First());
@@ -46,6 +47,11 @@ namespace OlxGrabber.Test
             var sitemapResult = sitemapGrabber.GrabNextSitemap(sitemapIndex).Result;
             Assert.NotEmpty(sitemapResult.AdIds);
             Assert.Contains(sitemapResult.SitemapEntry, sitemapIndex);
+        }
+
+        private class SimpleGrabberHttpClient : HttpClient, IGrabberHttpClient
+        {
+
         }
     }
 }
