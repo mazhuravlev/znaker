@@ -10,15 +10,32 @@ namespace OlxGrabber.Test
     public class Tests
     {
         [Fact]
-        public void TestSitemapGrabber()
+        public void TestSitemapGrabberUa()
         {
-            var olxConfig = new OlxConfig(
-                OlxType.Ua,
-                "http://olx.ua/sitemap.xml",
-                "https://ssl.olx.ua/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
-                "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
+            TestWithConfig(new OlxConfig(
+                    OlxType.Ua,
+                    "http://olx.ua/sitemap.xml",
+                    "https://ssl.olx.ua/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
+                    "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
+                )
             );
-            var sitemapGrabber = new OlxSitemapGrabber(olxConfig, new HttpClient());
+        }
+
+        [Fact]
+        public void TestSitemapGrabberBy()
+        {
+            TestWithConfig(new OlxConfig(
+                    OlxType.By,
+                    "https://www.olx.by/sitemap.xml",
+                    "https://ssl.olx.by/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
+                    "https://ssl.olx.by/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
+                )
+            );
+        }
+
+        private static void TestWithConfig(OlxConfig config)
+        {
+            var sitemapGrabber = new OlxSitemapGrabber(config, new HttpClient());
             var sitemapIndex = sitemapGrabber.GrabIndex().Result;
             Assert.NotEmpty(sitemapIndex);
             Assert.IsType(typeof(SitemapEntry), sitemapIndex.First());
