@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Razor.Parser;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PostgreSqlProvider;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrabberServer
 {
@@ -27,6 +30,10 @@ namespace GrabberServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<GrabberContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:GrabberConnectionString"]), ServiceLifetime.Transient);
+            services.AddDbContext<ZnakerContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
+
+
             // Add framework services.
             services.AddMvc();
         }
