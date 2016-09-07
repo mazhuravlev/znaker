@@ -52,7 +52,9 @@ namespace GrabberServer.Grabbers.Managers
                             ).Result
                         );
                     }
-                    Thread.Sleep(1000);
+                    //Thread.Sleep(1000); bad 
+                    //good
+                    Task.Delay(1000, cancellationToken).Wait(cancellationToken);
                 }
             }, cancellationToken);
         }
