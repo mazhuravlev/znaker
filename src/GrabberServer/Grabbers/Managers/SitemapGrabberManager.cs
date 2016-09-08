@@ -108,10 +108,7 @@ namespace GrabberServer.Grabbers.Managers
         private GrabberEntry GetNextDownloadGrabber()
         {
             return _grabberMap.Values
-                .Where(
-                    g =>
-                        g.IsEnabled &&
-                        g.LastDownloadTime.AddMinutes(g.IndexDownloadInterval).CompareTo(DateTime.Now) < 0)
+                .Where(g => g.IsEnabled)
                 .FirstOrDefault(
                     grabberEntry =>
                         grabberEntry.Grabber.HasSitemapsToGrab(
