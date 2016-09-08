@@ -10,6 +10,7 @@ namespace GrabberServer.Grabbers.Managers
     {
         private readonly SitemapService _sitemapService;
         private readonly Dictionary<string, GrabberEntry> _grabberMap = new Dictionary<string, GrabberEntry>();
+        public int CycleDelay = 1000;
 
         public SitemapGrabberManager(SitemapService sitemapService)
         {
@@ -52,9 +53,14 @@ namespace GrabberServer.Grabbers.Managers
                             ).Result
                         );
                     }
-                    //Thread.Sleep(1000); bad 
-                    //good
-                    Task.Delay(1000, cancellationToken).Wait(cancellationToken);
+                    try
+                    {
+                        Task.Delay(CycleDelay, cancellationToken).Wait(cancellationToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
                 }
             }, cancellationToken);
         }
@@ -81,7 +87,7 @@ namespace GrabberServer.Grabbers.Managers
             if (null != newGrabber) return newGrabber;
             return _grabberMap.Values
                 .Where(g => g.IsEnabled && null != g.LastIndexDownloadTime)
-                .First(
+                .FirstOrDefault(
                     g =>
                         ((DateTime) g.LastIndexDownloadTime).AddMinutes(g.IndexDownloadInterval)
                             .CompareTo(DateTime.Now) < 0);
