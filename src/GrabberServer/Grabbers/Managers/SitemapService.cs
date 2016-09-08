@@ -6,7 +6,18 @@ using Infrastructure;
 
 namespace GrabberServer.Grabbers.Managers
 {
-    public class SitemapService
+    public interface ISitemapService
+    {
+        void SaveSitemaps(List<SitemapEntry> sitemapEntries);
+
+        List<SitemapEntry> GetSitemapsForType(SourceType sourceType);
+
+        void MarkDownloaded(SitemapEntry sitemapEntry);
+
+        void SaveChanges();
+    }
+
+    public class SitemapService : ISitemapService
     {
         private readonly GrabberContext _grabberContext;
 
@@ -28,6 +39,17 @@ namespace GrabberServer.Grabbers.Managers
         {
             // TODO: save and update sitemaps
             throw new NotImplementedException();
+        }
+
+        public void SaveChanges()
+        {
+            _grabberContext.SaveChanges();
+        }
+
+        public void MarkDownloaded(SitemapEntry sitemapEntry)
+        {
+            sitemapEntry.DownloadedLastmod = sitemapEntry.Lastmod;
+            _grabberContext.SaveChanges();
         }
     }
 }

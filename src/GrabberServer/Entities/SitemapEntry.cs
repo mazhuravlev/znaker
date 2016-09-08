@@ -8,10 +8,5 @@ namespace GrabberServer.Entities
         public string Loc;
         public string Lastmod;
         public string DownloadedLastmod;
-
-        public void MarkDownloaded()
-        {
-            DownloadedLastmod = Lastmod;
-        }
     }
 }

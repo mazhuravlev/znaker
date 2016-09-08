@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Infrastructure;
 
 namespace GrabberServer.Grabbers.Managers
 {
     public class SitemapGrabberManager
     {
-        private readonly SitemapService _sitemapService;
+        private readonly ISitemapService _sitemapService;
+        private readonly AdJobsService _adJobsService;
         private readonly Dictionary<string, GrabberEntry> _grabberMap = new Dictionary<string, GrabberEntry>();
         public int CycleDelay = 1000;
 
-        public SitemapGrabberManager(SitemapService sitemapService)
+        public SitemapGrabberManager(ISitemapService sitemapService, AdJobsService adJobsService)
         {
             _sitemapService = sitemapService;
+            _adJobsService = adJobsService;
         }
 
         public void AddGrabber(string name, ISitemapGrabber sitemapGrabber, int indexDownloadInterval = 60,
@@ -38,17 +41,18 @@ namespace GrabberServer.Grabbers.Managers
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    var indexGrabber = GetNextIndexGrabber();
-                    if (indexGrabber != null)
+                    var indexGrabberEntry = GetNextIndexGrabber();
+                    if (indexGrabberEntry != null)
                     {
-                        _sitemapService.SaveSitemaps(indexGrabber.Grabber.GrabIndex().Result);
+                        _sitemapService.SaveSitemaps(indexGrabberEntry.Grabber.GrabIndex().Result);
                     }
-                    var downloadGrabber = GetNextDownloadGrabber();
-                    if (null != downloadGrabber)
+                    var downloadGrabberEntry = GetNextDownloadGrabber();
+                    if (null != downloadGrabberEntry)
                     {
                         HandleSitemapGrabResult(
-                            downloadGrabber.Grabber.GrabNextSitemap(
-                                _sitemapService.GetSitemapsForType(downloadGrabber.Grabber.GetSourceType()
+                            downloadGrabberEntry.Grabber.GetSourceType(),
+                            downloadGrabberEntry.Grabber.GrabNextSitemap(
+                                _sitemapService.GetSitemapsForType(downloadGrabberEntry.Grabber.GetSourceType()
                                 )
                             ).Result
                         );
@@ -65,9 +69,17 @@ namespace GrabberServer.Grabbers.Managers
             }, cancellationToken);
         }
 
-        private void HandleSitemapGrabResult(SitemapGrabResult result)
+        private void HandleSitemapGrabResult(SourceType sourceType, SitemapGrabResult result)
         {
-            throw new NotImplementedException();
+            if (result.AdIds.Count > 0)
+            {
+                _sitemapService.MarkDownloaded(result.SitemapEntry);
+                _adJobsService.StoreAdJobs(sourceType, result.AdIds);
+            }
+            else
+            {
+                throw new Exception("Got no ad ids from " + sourceType.ToString());
+            }
         }
 
         protected class GrabberEntry
