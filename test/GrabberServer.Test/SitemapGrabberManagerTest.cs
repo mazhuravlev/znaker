@@ -9,11 +9,11 @@ using Infrastructure;
 using Moq;
 using Xunit;
 
-namespace GrabberServer.Test
+namespace GrabberServer
 {
-    public class SitemapGrabberManager
+    public class SitemapGrabberManagerTest
     {
-        private readonly CancellationTokenSource TokenSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         /// <summary>
         /// Manager must not invoke grabbers when there in no demand for jobs
@@ -23,14 +23,14 @@ namespace GrabberServer.Test
         {
             var sitemapService = new Mock<ISitemapService>();
             var adJobsService = new Mock<IAdJobsService>();
-            var manager = new GrabberServer.Grabbers.Managers.SitemapGrabberManager(
+            var manager = new SitemapGrabberManager(
                 sitemapService.Object, adJobsService.Object
             )
             { CycleDelay = TimeSpan.FromMilliseconds(1) };
             var grabber = new Mock<ISitemapGrabber>();
             grabber.Setup(g => g.GrabIndex()).Returns(() => Task.FromResult(new List<SitemapEntry>()));
             manager.AddGrabber("test_grabber", grabber.Object, isEnabled: true);
-            var task = manager.Run(TokenSource.Token);
+            var task = manager.Run(_tokenSource.Token);
             while (task.Status != TaskStatus.Running)
             {
                 Thread.Sleep(10);
@@ -39,7 +39,7 @@ namespace GrabberServer.Test
             Assert.False(task.IsFaulted);
             grabber.Verify(g => g.GrabIndex());
             grabber.Verify(g => g.HasSitemapsToGrab(It.IsAny<List<SitemapEntry>>()), Times.AtMost(0));
-            TokenSource.Cancel();
+            _tokenSource.Cancel();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace GrabberServer.Test
         {
             var sitemapService = new Mock<ISitemapService>();
             var adJobsService = new Mock<IAdJobsService>();
-            var manager = new GrabberServer.Grabbers.Managers.SitemapGrabberManager(
+            var manager = new SitemapGrabberManager(
                     sitemapService.Object, adJobsService.Object
                 )
                 {CycleDelay = TimeSpan.FromMilliseconds(1)};
@@ -59,16 +59,16 @@ namespace GrabberServer.Test
             grabber.Setup(g => g.GetSourceType()).Returns(SourceType.Avito);
             manager.AddGrabber("test_grabber", grabber.Object, isEnabled: true);
             manager.RequestMoreJobs(new JobDemand{{SourceType.Avito, 1}});
-            var task = manager.Run(TokenSource.Token);
+            var task = manager.Run(_tokenSource.Token);
             while (task.Status != TaskStatus.Running)
             {
                 Thread.Sleep(10);
             }
-            Thread.Sleep(10);
+            Thread.Sleep(1000);
             Assert.False(task.IsFaulted);
             grabber.Verify(g => g.GrabIndex());
             grabber.Verify(g => g.HasSitemapsToGrab(It.IsAny<List<SitemapEntry>>()));
-            TokenSource.Cancel();
+            _tokenSource.Cancel();
         }
 
         /// <summary>
@@ -79,18 +79,18 @@ namespace GrabberServer.Test
         {
             var sitemapService = new Mock<ISitemapService>();
             var adJobsService = new Mock<IAdJobsService>();
-            var manager = new GrabberServer.Grabbers.Managers.SitemapGrabberManager(
+            var manager = new SitemapGrabberManager(
                 sitemapService.Object, adJobsService.Object
             )
             { CycleDelay = TimeSpan.Zero };
-            var task = manager.Run(TokenSource.Token);
+            var task = manager.Run(_tokenSource.Token);
             while (task.Status != TaskStatus.Running)
             {
                 Thread.Sleep(10);
             }
             Thread.Sleep(10);
             Assert.False(task.IsFaulted);
-            TokenSource.Cancel();
+            _tokenSource.Cancel();
         }
     }
 }

@@ -6,7 +6,7 @@ using GrabberServer.Grabbers;
 using GrabberServer.Grabbers.Olx;
 using Xunit;
 
-namespace GrabberServer.Test
+namespace GrabberServer
 {
     public class OlxSitemapGrabberTest
     {

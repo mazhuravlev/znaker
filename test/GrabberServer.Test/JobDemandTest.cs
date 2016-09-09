@@ -5,7 +5,7 @@ using Infrastructure;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace GrabberServer.Test
+namespace GrabberServer
 {
     public class JobDemandTests
     {

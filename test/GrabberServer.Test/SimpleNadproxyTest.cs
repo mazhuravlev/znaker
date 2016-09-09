@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net.Http;
+using GrabberServer.Grabbers.Nadproxy;
 using NuGet.Configuration;
 using Xunit;
 
-namespace GrabberServer.Test
+namespace GrabberServer
 {
     public class SimpleNadproxyTest
     {
@@ -15,7 +16,7 @@ namespace GrabberServer.Test
         [Fact]
         public void TestSuccess()
         {
-            var nadproxy = new GrabberServer.Grabbers.Nadproxy.SimpleNadproxy(new WebProxy(GoodProxyUrl));
+            var nadproxy = new SimpleNadproxy(new WebProxy(GoodProxyUrl));
             var response = nadproxy.GetAsync(GoodUrl).Result;
             Assert.IsAssignableFrom<HttpResponseMessage>(response);
             Assert.True(response.IsSuccessStatusCode);
@@ -25,7 +26,7 @@ namespace GrabberServer.Test
         [Fact]
         public void TestBadUrl()
         {
-            var nadproxy = new GrabberServer.Grabbers.Nadproxy.SimpleNadproxy(new WebProxy(GoodProxyUrl));
+            var nadproxy = new SimpleNadproxy(new WebProxy(GoodProxyUrl));
             var response = nadproxy.GetAsync(BadUrl).Result;
             Assert.IsAssignableFrom<HttpResponseMessage>(response);
             Assert.True(!response.IsSuccessStatusCode);
@@ -34,7 +35,7 @@ namespace GrabberServer.Test
         [Fact]
         public void TestBadProxyFail()
         {
-            var nadproxy = new GrabberServer.Grabbers.Nadproxy.SimpleNadproxy(new WebProxy(BadProxyUrl));
+            var nadproxy = new SimpleNadproxy(new WebProxy(BadProxyUrl));
             Assert.ThrowsAny<Exception>(() => nadproxy.GetAsync(GoodUrl).Result);
         }
     }

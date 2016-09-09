@@ -5,7 +5,7 @@ using GrabberServer.Infrastructure.PhoneUtils.CountryRules;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace GrabberServer.Test
+namespace GrabberServer
 {
     public class PhoneUtilsTest
     {
