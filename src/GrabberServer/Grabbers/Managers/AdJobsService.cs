@@ -41,11 +41,14 @@ namespace GrabberServer.Grabbers.Managers
         public JobDemandResult GetJobs(JobDemand jobDemand)
         {
             var jobDemandResult = new JobDemandResult();
-            jobDemandResult.AddRange(
-                jobDemand.Select(
-                    jodDemandEntry =>
-                        new KeyValuePair<SourceType, List<AdDownloadJob>>(jodDemandEntry.Key,
-                            GetJobsForSourceType(jodDemandEntry.Key, jodDemandEntry.Value))));
+            foreach (var jobDemandEntry in jobDemand)
+            {
+                var sourceTypeJobs = GetJobsForSourceType(jobDemandEntry.Key, jobDemandEntry.Value);
+                if (sourceTypeJobs.Count > 0)
+                {
+                    jobDemandResult[jobDemandEntry.Key] = sourceTypeJobs;
+                }
+            }
             return jobDemandResult;
         }
 

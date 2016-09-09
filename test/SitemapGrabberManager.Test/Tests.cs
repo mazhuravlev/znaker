@@ -30,7 +30,7 @@ namespace SitemapGrabberManager.Test
             manager.AddGrabber("test_grabber", grabber.Object, isEnabled: true);
             var task = manager.Run(CancellationToken.None);
             Thread.Sleep(100);
-            Assert.Equal(TaskStatus.Running, task.Status);
+            Assert.False(task.IsFaulted);
             grabber.Verify(g => g.GrabIndex());
             grabber.Verify(g => g.HasSitemapsToGrab(It.IsAny<List<SitemapEntry>>()), Times.AtMost(0));
         }
@@ -51,10 +51,10 @@ namespace SitemapGrabberManager.Test
             grabber.Setup(g => g.GrabIndex()).Returns(() => Task.FromResult(new List<SitemapEntry>()));
             grabber.Setup(g => g.GetSourceType()).Returns(SourceType.Avito);
             manager.AddGrabber("test_grabber", grabber.Object, isEnabled: true);
-            manager.RequestMoreJobs(new JobDemand{new KeyValuePair<SourceType, int>(SourceType.Avito, 1)});
+            manager.RequestMoreJobs(new JobDemand{{SourceType.Avito, 1}});
             var task = manager.Run(CancellationToken.None);
-            Thread.Sleep(1000);
-            Assert.Equal(TaskStatus.Running, task.Status);
+            Thread.Sleep(100);
+            Assert.False(task.IsFaulted);
             grabber.Verify(g => g.GrabIndex());
             grabber.Verify(g => g.HasSitemapsToGrab(It.IsAny<List<SitemapEntry>>()));
         }
@@ -73,7 +73,7 @@ namespace SitemapGrabberManager.Test
             { CycleDelay = TimeSpan.Zero };
             var task = manager.Run(CancellationToken.None);
             Thread.Sleep(10);
-            Assert.Equal(TaskStatus.Running, task.Status);
+            Assert.False(task.IsFaulted);
         }
     }
 }

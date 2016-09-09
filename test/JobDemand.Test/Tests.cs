@@ -17,11 +17,11 @@ namespace Tests
         {
             var demand = new JobDemand
             {
-                new KeyValuePair<SourceType, int>(SourceType.Avito, 10)
+                {SourceType.Avito, 10}
             };
             var demandResult = new JobDemandResult
             {
-                new KeyValuePair<SourceType, List<AdDownloadJob>>(SourceType.Avito, new List<AdDownloadJob>())
+                {SourceType.Avito, new List<AdDownloadJob>()}
             };
             Assert.False(demandResult.DoesSatisfyDemand(demand));
         }
@@ -31,11 +31,11 @@ namespace Tests
         {
             var demand = new JobDemand
             {
-                new KeyValuePair<SourceType, int>(SourceType.Avito, 1)
+                {SourceType.Avito, 1}
             };
             var demandResult = new JobDemandResult
             {
-                new KeyValuePair<SourceType, List<AdDownloadJob>>(SourceType.Avito, new List<AdDownloadJob>{new AdDownloadJob()})
+                {SourceType.Avito, new List<AdDownloadJob> {new AdDownloadJob()}}
             };
             Assert.True(demandResult.DoesSatisfyDemand(demand));
         }

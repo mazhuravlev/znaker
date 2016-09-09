@@ -63,14 +63,7 @@ namespace GrabberServer.Grabbers.Managers
                             ).Result
                         );
                     }
-                    try
-                    {
-                        Task.Delay(CycleDelay, cancellationToken).Wait(cancellationToken);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return;
-                    }
+                    Task.Delay(CycleDelay, cancellationToken).Wait(cancellationToken);
                 }
             }, cancellationToken);
         }
