@@ -12,7 +12,7 @@ namespace GrabberServer.Grabbers.Managers
         private readonly ISitemapService _sitemapService;
         private readonly AdJobsService _adJobsService;
         private readonly Dictionary<string, GrabberEntry> _grabberMap = new Dictionary<string, GrabberEntry>();
-        public int CycleDelay = 1000;
+        public TimeSpan CycleDelay = TimeSpan.FromSeconds(1);
 
         public SitemapGrabberManager(ISitemapService sitemapService, AdJobsService adJobsService)
         {
@@ -20,7 +20,7 @@ namespace GrabberServer.Grabbers.Managers
             _adJobsService = adJobsService;
         }
 
-        public void AddGrabber(string name, ISitemapGrabber sitemapGrabber, int indexDownloadInterval = 60,
+        public void AddGrabber(string name, ISitemapGrabber sitemapGrabber, TimeSpan? indexDownloadInterval = null,
             bool isEnabled = false)
         {
             _grabberMap.Add(
@@ -29,7 +29,7 @@ namespace GrabberServer.Grabbers.Managers
                 {
                     Grabber = sitemapGrabber,
                     Name = name,
-                    IndexDownloadInterval = indexDownloadInterval,
+                    IndexDownloadInterval = indexDownloadInterval ?? TimeSpan.FromMinutes(60),
                     IsEnabled = isEnabled
                 }
             );
@@ -78,7 +78,7 @@ namespace GrabberServer.Grabbers.Managers
             }
             else
             {
-                throw new Exception("Got no ad ids from " + sourceType.ToString());
+                throw new Exception("Got no ad ids from " + sourceType);
             }
         }
 
@@ -86,33 +86,30 @@ namespace GrabberServer.Grabbers.Managers
         {
             public ISitemapGrabber Grabber;
             public string Name;
-            public int IndexDownloadInterval;
+            public TimeSpan IndexDownloadInterval;
             public int DownloadInteval = 1;
             public bool IsEnabled;
             public DateTime LastDownloadTime = DateTime.Now;
-            public DateTime? LastIndexDownloadTime = null;
+            public DateTime LastIndexDownloadTime = DateTime.Now.AddYears(-1);
         }
 
         private GrabberEntry GetNextIndexGrabber()
         {
-            var newGrabber = _grabberMap.Values.FirstOrDefault(g => g.IsEnabled && null == g.LastIndexDownloadTime);
-            if (null != newGrabber) return newGrabber;
-            return _grabberMap.Values
-                .Where(g => g.IsEnabled && null != g.LastIndexDownloadTime)
-                .FirstOrDefault(
-                    g =>
-                        ((DateTime) g.LastIndexDownloadTime).AddMinutes(g.IndexDownloadInterval)
-                            .CompareTo(DateTime.Now) < 0);
+            return _grabberMap.Values.FirstOrDefault(g =>
+                g.IsEnabled &&
+                g.LastIndexDownloadTime + g.IndexDownloadInterval < DateTime.Now
+            );
         }
 
         private GrabberEntry GetNextDownloadGrabber()
         {
             return _grabberMap.Values
-                .Where(g => g.IsEnabled)
                 .FirstOrDefault(
-                    grabberEntry =>
-                        grabberEntry.Grabber.HasSitemapsToGrab(
-                            _sitemapService.GetSitemapsForType(grabberEntry.Grabber.GetSourceType())));
+                    g =>
+                        g.IsEnabled &&
+                        g.Grabber.HasSitemapsToGrab(_sitemapService.GetSitemapsForType(g.Grabber.GetSourceType())
+                )
+            );
         }
     }
 }

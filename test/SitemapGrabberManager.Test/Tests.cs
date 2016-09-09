@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using GrabberServer.Entities;
@@ -19,7 +20,7 @@ namespace SitemapGrabberManager.Test
             var manager = new GrabberServer.Grabbers.Managers.SitemapGrabberManager(
                 sitemapService.Object, adJobsService.Object
             )
-            { CycleDelay = 1 };
+            { CycleDelay = TimeSpan.FromMilliseconds(1) };
             var grabber = new Mock<ISitemapGrabber>();
             grabber.Setup(g => g.GrabIndex()).Returns(() => Task.FromResult(new List<SitemapEntry>()));
             manager.AddGrabber("test_grabber", grabber.Object, isEnabled: true);
@@ -38,7 +39,7 @@ namespace SitemapGrabberManager.Test
             var manager = new GrabberServer.Grabbers.Managers.SitemapGrabberManager(
                 sitemapService.Object, adJobsService.Object
             )
-            { CycleDelay = 0 };
+            { CycleDelay = TimeSpan.Zero };
             var task = manager.Run(CancellationToken.None);
             Thread.Sleep(10);
             Assert.Equal(TaskStatus.Running, task.Status);
