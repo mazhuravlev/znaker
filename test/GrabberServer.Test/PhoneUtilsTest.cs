@@ -5,9 +5,9 @@ using GrabberServer.Infrastructure.PhoneUtils.CountryRules;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace Tests
+namespace GrabberServer.Test
 {
-    public class Tests
+    public class PhoneUtilsTest
     {
         [Fact]
         public void TestInvalidPhonesError()

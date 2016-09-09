@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GrabberServer.Entities;
 using GrabberServer.Grabbers;
-using GrabberServer.Infrastructure.PhoneUtils;
-using GrabberServer.Infrastructure.PhoneUtils.CountryRules;
 using Infrastructure;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace Tests
+namespace GrabberServer.Test
 {
-    public class Tests
+    public class JobDemandTests
     {
         [Fact]
         public void TestNotSatisfied()

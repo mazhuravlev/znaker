@@ -9,10 +9,12 @@ using Infrastructure;
 using Moq;
 using Xunit;
 
-namespace SitemapGrabberManager.Test
+namespace GrabberServer.Test
 {
-    public class Tests
+    public class SitemapGrabberManager
     {
+        private readonly CancellationTokenSource TokenSource = new CancellationTokenSource();
+
         /// <summary>
         /// Manager must not invoke grabbers when there in no demand for jobs
         /// </summary>
@@ -28,11 +30,16 @@ namespace SitemapGrabberManager.Test
             var grabber = new Mock<ISitemapGrabber>();
             grabber.Setup(g => g.GrabIndex()).Returns(() => Task.FromResult(new List<SitemapEntry>()));
             manager.AddGrabber("test_grabber", grabber.Object, isEnabled: true);
-            var task = manager.Run(CancellationToken.None);
-            Thread.Sleep(100);
+            var task = manager.Run(TokenSource.Token);
+            while (task.Status != TaskStatus.Running)
+            {
+                Thread.Sleep(10);
+            }
+            Thread.Sleep(10);
             Assert.False(task.IsFaulted);
             grabber.Verify(g => g.GrabIndex());
             grabber.Verify(g => g.HasSitemapsToGrab(It.IsAny<List<SitemapEntry>>()), Times.AtMost(0));
+            TokenSource.Cancel();
         }
 
         /// <summary>
@@ -52,11 +59,16 @@ namespace SitemapGrabberManager.Test
             grabber.Setup(g => g.GetSourceType()).Returns(SourceType.Avito);
             manager.AddGrabber("test_grabber", grabber.Object, isEnabled: true);
             manager.RequestMoreJobs(new JobDemand{{SourceType.Avito, 1}});
-            var task = manager.Run(CancellationToken.None);
-            Thread.Sleep(100);
+            var task = manager.Run(TokenSource.Token);
+            while (task.Status != TaskStatus.Running)
+            {
+                Thread.Sleep(10);
+            }
+            Thread.Sleep(10);
             Assert.False(task.IsFaulted);
             grabber.Verify(g => g.GrabIndex());
             grabber.Verify(g => g.HasSitemapsToGrab(It.IsAny<List<SitemapEntry>>()));
+            TokenSource.Cancel();
         }
 
         /// <summary>
@@ -71,9 +83,14 @@ namespace SitemapGrabberManager.Test
                 sitemapService.Object, adJobsService.Object
             )
             { CycleDelay = TimeSpan.Zero };
-            var task = manager.Run(CancellationToken.None);
+            var task = manager.Run(TokenSource.Token);
+            while (task.Status != TaskStatus.Running)
+            {
+                Thread.Sleep(10);
+            }
             Thread.Sleep(10);
             Assert.False(task.IsFaulted);
+            TokenSource.Cancel();
         }
     }
 }

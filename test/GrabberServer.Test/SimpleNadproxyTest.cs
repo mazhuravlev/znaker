@@ -3,9 +3,9 @@ using System.Net.Http;
 using NuGet.Configuration;
 using Xunit;
 
-namespace SimpleNadproxy.Test
+namespace GrabberServer.Test
 {
-    public class Tests
+    public class SimpleNadproxyTest
     {
         private const string GoodProxyUrl = "http://localhost:8888";
         private const string BadProxyUrl = "http://unreachable";
