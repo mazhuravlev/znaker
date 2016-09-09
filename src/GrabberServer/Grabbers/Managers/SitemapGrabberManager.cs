@@ -7,14 +7,20 @@ using Infrastructure;
 
 namespace GrabberServer.Grabbers.Managers
 {
-    public class SitemapGrabberManager
+    public interface ISitemapGrabberManager
+    {
+        void RequestMoreJobs(JobDemand jobDemand);
+    }
+
+    public class SitemapGrabberManager : ISitemapGrabberManager
     {
         private readonly ISitemapService _sitemapService;
-        private readonly AdJobsService _adJobsService;
+        private readonly IAdJobsService _adJobsService;
         private readonly Dictionary<string, GrabberEntry> _grabberMap = new Dictionary<string, GrabberEntry>();
-        public TimeSpan CycleDelay = TimeSpan.FromSeconds(1);
+        private readonly Dictionary<SourceType, int> _jobDemand = new Dictionary<SourceType, int>();
+        public TimeSpan CycleDelay;
 
-        public SitemapGrabberManager(ISitemapService sitemapService, AdJobsService adJobsService)
+        public SitemapGrabberManager(ISitemapService sitemapService, IAdJobsService adJobsService)
         {
             _sitemapService = sitemapService;
             _adJobsService = adJobsService;
@@ -69,6 +75,21 @@ namespace GrabberServer.Grabbers.Managers
             }, cancellationToken);
         }
 
+        public void RequestMoreJobs(JobDemand jobDemand)
+        {
+            foreach (var jobDemandEntry in jobDemand)
+            {
+                if (_jobDemand.ContainsKey(jobDemandEntry.Key))
+                {
+                    _jobDemand[jobDemandEntry.Key] += jobDemandEntry.Value;
+                }
+                else
+                {
+                    _jobDemand[jobDemandEntry.Key] = jobDemandEntry.Value;
+                }
+            }
+        }
+
         private void HandleSitemapGrabResult(SourceType sourceType, SitemapGrabResult result)
         {
             if (result.AdIds.Count > 0)
@@ -96,20 +117,23 @@ namespace GrabberServer.Grabbers.Managers
         private GrabberEntry GetNextIndexGrabber()
         {
             return _grabberMap.Values.FirstOrDefault(g =>
-                g.IsEnabled &&
-                g.LastIndexDownloadTime + g.IndexDownloadInterval < DateTime.Now
+                    g.IsEnabled &&
+                    g.LastIndexDownloadTime + g.IndexDownloadInterval < DateTime.Now
             );
         }
 
         private GrabberEntry GetNextDownloadGrabber()
         {
-            return _grabberMap.Values
-                .FirstOrDefault(
-                    g =>
-                        g.IsEnabled &&
-                        g.Grabber.HasSitemapsToGrab(_sitemapService.GetSitemapsForType(g.Grabber.GetSourceType())
-                )
-            );
+            if (_jobDemand.Count == 0) return null;
+            var desirousSources = _jobDemand.OrderByDescending(j => j.Value).ToList();
+            return desirousSources
+                .Select(
+                    desirousSource =>
+                        _grabberMap.Values.FirstOrDefault(
+                            g =>
+                                g.IsEnabled &&
+                                g.Grabber.HasSitemapsToGrab(_sitemapService.GetSitemapsForType(g.Grabber.GetSourceType()))))
+                .FirstOrDefault(grabber => grabber != null);
         }
     }
 }

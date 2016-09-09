@@ -10,7 +10,11 @@ namespace GrabberServer
     public class GrabberContext : DbContext
     {
         public DbSet<SitemapEntry> SitemapEntries { get; set; }
-        public GrabberContext(DbContextOptions<GrabberContext> options) : base(options) { }
+        public DbSet<AdDownloadJob> AdDownloadJobs { get; set; }
+
+        public GrabberContext(DbContextOptions<GrabberContext> options) : base(options)
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder b)
         {
