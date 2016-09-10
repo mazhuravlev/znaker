@@ -7,7 +7,7 @@ namespace GrabberServer.Test
 {
     public class SimpleNadproxyTest
     {
-        private const string GoodProxyUrl = "http://localhost:8888";
+        private const string GoodProxyUrl = "http://localhost:3128";
         private const string BadProxyUrl = "http://unreachable";
         private const string GoodUrl = "http://example.com";
         private const string BadUrl = "http://unreachable";

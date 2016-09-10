@@ -11,6 +11,7 @@ addons:
     - libunwind8
     - zlib1g
     - npm
+    - squid
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true

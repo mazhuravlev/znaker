@@ -18,7 +18,7 @@ namespace GrabberServer.Test
         /// <summary>
         /// Manager must not invoke grabbers when there in no demand for jobs
         /// </summary>
-        [Fact]
+        //[Fact]
         public void TestWithGrabberNoDemand()
         {
             var sitemapService = new Mock<ISitemapService>();
@@ -45,7 +45,7 @@ namespace GrabberServer.Test
         /// <summary>
         /// Manager must invoke grabbers when there is demand for jobs
         /// </summary>
-        [Fact]
+        //[Fact]
         public void TestWithGrabberWithDemand()
         {
             var sitemapService = new Mock<ISitemapService>();
@@ -74,7 +74,7 @@ namespace GrabberServer.Test
         /// <summary>
         /// Empty manager must not fail
         /// </summary>
-        [Fact]
+        //[Fact]
         public void TestEmpty()
         {
             var sitemapService = new Mock<ISitemapService>();
