@@ -1,7 +1,7 @@
 ﻿@model EntryModel
 
 <h1>@Model.Contact</h1>
-
+@Html.Partial("Banners/AdaptPanel")
 <div class="panel panel-default">
     <div class="panel-heading">
         @Model.Source - @Model.CreatedOn
@@ -10,8 +10,10 @@
         <span>@(new HtmlString(Model.Text))</span>
     </div>
 </div>
+@Html.Partial("Banners/AdaptPanel")
 <div>
     <a class="btn btn-default btn-raised" asp-controller="Home" asp-action="Contact" asp-route-id="@Model.Contact">
         Вернуться к @(new HtmlString(Model.Contact))
     </a>
 </div>
+@Html.Partial("Banners/AdaptPanel")

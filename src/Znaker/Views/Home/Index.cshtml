@@ -20,24 +20,9 @@
 <h1>В базе @Model.Items.TotalCount контактов и @Model.TotalEntries записей</h1>
 @Html.Partial("Partials/Hypercomments")
 @Html.Partial("Partials/VKcomments")
-<div class="panel panel-default">
-    <div class="panel-heading">Реклама</div>
-    <div class="panel-body">
-        @Html.Partial("Banners/Adapt")
-    </div>
-</div>
-<div class="panel panel-default">
-    <div class="panel-heading">Реклама</div>
-    <div class="panel-body">
-        @Html.Partial("Banners/Adapt")
-    </div>
-</div>
-<div class="panel panel-default">
-    <div class="panel-heading">Реклама</div>
-    <div class="panel-body">
-        @Html.Partial("Banners/Adapt")
-    </div>
-</div>
+@Html.Partial("Banners/AdaptPanel")
+@Html.Partial("Banners/AdaptPanel")
+@Html.Partial("Banners/AdaptPanel")
 <ul class="no-style">
     @foreach (var i in Model.Items)
     {

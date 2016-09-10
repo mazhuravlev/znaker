@@ -1,7 +1,12 @@
 ﻿@model ContactModel
 
 <h1>@Model.Identity</h1>
-
+@{ var adsenseCount = 0;}
+@if (Model.Entries.Count == 1)
+{
+    @Html.Partial("Banners/AdaptPanel")
+    adsenseCount++;
+}
 @foreach (var entry in Model.Entries)
 {
     <div class="panel panel-default">
@@ -15,4 +20,17 @@
             }
         </div>
     </div>
+    if (adsenseCount < 3)
+    {
+       @Html.Partial("Banners/AdaptPanel")
+        adsenseCount++;
+    }
+}
+@if (adsenseCount < 3)
+{
+    while (adsenseCount < 3)
+    {
+        @Html.Partial("Banners/AdaptPanel")
+        adsenseCount++;
+    }
 }
