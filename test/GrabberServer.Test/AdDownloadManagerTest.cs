@@ -13,7 +13,7 @@ namespace GrabberServer
     {
         private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
-        [Fact]
+        //[Fact]
         public void Test()
         {
             var adJobsService = new Mock<IAdJobsService>();
@@ -30,7 +30,7 @@ namespace GrabberServer
             _tokenSource.Cancel();
         }
 
-        [Fact]
+        //[Fact]
         public void TestSitemapsRequest()
         {
             var adJobsService = new Mock<IAdJobsService>();
