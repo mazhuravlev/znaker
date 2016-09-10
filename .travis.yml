@@ -12,6 +12,7 @@ addons:
     - zlib1g
     - npm
     - squid
+    - curl
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -36,3 +37,7 @@ before_script:
 script:
   - chmod +x ./build.sh  
   - ./build.sh
+after_success:
+  -  curl --data-binary '{"text":"Build successful"}'  'http://integram.org/cU5CLpMbNcR'
+after_failure:
+  -  curl --data-binary '{"text":"Build FAILED 🙀"}'  'http://integram.org/cU5CLpMbNcR'
