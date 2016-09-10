@@ -18,9 +18,8 @@ namespace GrabberServer
 
         protected override void OnModelCreating(ModelBuilder b)
         {
-            b.Entity<SitemapEntry>(
-                //c => c
-            );
+            b.Entity<SitemapEntry>().HasKey(se => se.Id);
+            b.Entity<AdDownloadJob>().HasKey(adj => adj.Id);
         }
     }
 }

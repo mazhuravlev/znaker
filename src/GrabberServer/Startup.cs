@@ -52,7 +52,7 @@ namespace GrabberServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider provider)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -77,11 +77,11 @@ namespace GrabberServer
 
             var olxUaConfig = new OlxConfig(OlxType.Ua, "http://olx.ua/sitemap.xml", "PlaceHereAdvdataurl{0}",
                 "PlaceHereAdvcontacturl{0}");
-            var sitemapManager = app.ApplicationServices.GetService<SitemapGrabberManager>();
+            var sitemapManager = provider.GetService<SitemapGrabberManager>();
             var sitemapGrabber = new OlxSitemapGrabber(olxUaConfig, new GrabberHttpClient());
             sitemapManager.AddGrabber("olx_ua", sitemapGrabber);
 
-            var adManager = app.ApplicationServices.GetService<AdGrabberManager>();
+            var adManager = provider.GetService<AdGrabberManager>();
             var adGrabber = new OlxAdGrabber(olxUaConfig, new GrabberHttpClient());
             adManager.AddGrabber("olx_ua", adGrabber);
 
