@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Infrastructure;
@@ -9,7 +10,11 @@ using PostgreSqlProvider.Entities;
 
 namespace GrabberServer.Grabbers.Managers
 {
-    public class AdDownloadManager
+    public interface IAdGrabberManager
+    {
+    }
+
+    public class AdGrabberManager : IAdGrabberManager
     {
         private readonly IAdJobsService _adJobsService;
         private readonly ISitemapGrabberManager _sitemapGrabberManager;
@@ -19,7 +24,7 @@ namespace GrabberServer.Grabbers.Managers
 
         private static readonly TimeSpan CycleDelay = TimeSpan.FromSeconds(1);
 
-        public AdDownloadManager(IAdJobsService adJobsService,
+        public AdGrabberManager(IAdJobsService adJobsService,
             ISitemapGrabberManager sitemapGrabberManager = null)
         {
             _adJobsService = adJobsService;
@@ -67,7 +72,7 @@ namespace GrabberServer.Grabbers.Managers
             }
         }
 
-        public void ProcessFinishedJobs()
+        private void ProcessFinishedJobs()
         {
             while (true)
             {
@@ -77,6 +82,7 @@ namespace GrabberServer.Grabbers.Managers
                 }
                 else
                 {
+                    throw new Exception("OK: Has finished jobs!");
                     // TODO: save finished jobs results and delete their tasks
                 }
             }
@@ -93,9 +99,9 @@ namespace GrabberServer.Grabbers.Managers
         private JobDemand GetJobDemand()
         {
             var list = _grabberEntries.Values.Where(g => g.IsEnabled)
-                    .Select(
-                        g => new KeyValuePair<SourceType, int>(g.Grabber.GetSourceType(), g.Jobs.Count - g.JobsLimit))
-                    .ToList();
+                .Select(
+                    g => new KeyValuePair<SourceType, int>(g.Grabber.GetSourceType(), g.Jobs.Count - g.JobsLimit))
+                .ToList();
             return JobDemand.FromList(list);
         }
 

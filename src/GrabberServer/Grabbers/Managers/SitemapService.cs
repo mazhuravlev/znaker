@@ -21,10 +21,6 @@ namespace GrabberServer.Grabbers.Managers
     {
         private readonly GrabberContext _grabberContext;
 
-        public SitemapService()
-        {
-        }
-
         public SitemapService(GrabberContext grabberContext)
         {
             _grabberContext = grabberContext;

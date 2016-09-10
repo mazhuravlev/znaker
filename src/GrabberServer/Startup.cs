@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using GrabberServer.Grabbers;
+using GrabberServer.Grabbers.Managers;
+using GrabberServer.Grabbers.Nadproxy;
+using GrabberServer.Grabbers.Olx;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Razor.Parser;
@@ -30,8 +36,15 @@ namespace GrabberServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<GrabberContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:GrabberConnectionString"]), ServiceLifetime.Transient);
-            services.AddDbContext<ZnakerContext>(c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
+            services.AddDbContext<GrabberContext>(
+                c => c.UseNpgsql(Configuration["ConnectionStrings:GrabberConnectionString"]), ServiceLifetime.Transient);
+            services.AddDbContext<ZnakerContext>(
+                c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
+
+            services.AddSingleton<SitemapGrabberManager>();
+            services.AddSingleton<AdGrabberManager>();
+            services.AddTransient<IAdJobsService, AdJobsService>();
+            services.AddTransient<ISitemapService, SitemapService>();
 
 
             // Add framework services.
@@ -61,6 +74,19 @@ namespace GrabberServer
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            var olxUaConfig = new OlxConfig(OlxType.Ua, "http://olx.ua/sitemap.xml", "PlaceHereAdvdataurl{0}",
+                "PlaceHereAdvcontacturl{0}");
+            var sitemapManager = app.ApplicationServices.GetService<SitemapGrabberManager>();
+            var sitemapGrabber = new OlxSitemapGrabber(olxUaConfig, new GrabberHttpClient());
+            sitemapManager.AddGrabber("olx_ua", sitemapGrabber);
+
+            var adManager = app.ApplicationServices.GetService<AdGrabberManager>();
+            var adGrabber = new OlxAdGrabber(olxUaConfig, new GrabberHttpClient());
+            adManager.AddGrabber("olx_ua", adGrabber);
+
+            sitemapManager.Run(CancellationToken.None);
+            adManager.Run(CancellationToken.None);
         }
     }
 }

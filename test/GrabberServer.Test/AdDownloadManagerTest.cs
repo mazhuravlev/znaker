@@ -18,7 +18,7 @@ namespace GrabberServer
         {
             var adJobsService = new Mock<IAdJobsService>();
             adJobsService.Setup(ajs => ajs.GetJobs(It.IsAny<JobDemand>())).Returns(() => new JobDemandResult());
-            var manager = new AdDownloadManager(adJobsService.Object);
+            var manager = new AdGrabberManager(adJobsService.Object);
             var task = manager.Run(_tokenSource.Token);
             while (task.Status != TaskStatus.Running)
             {
@@ -38,7 +38,7 @@ namespace GrabberServer
             var sitemapGrabberManager = new Mock<ISitemapGrabberManager>();
             var grabber = new Mock<IAdGrabber>();
             grabber.Setup(g => g.GetSourceType()).Returns(SourceType.Avito);
-            var manager = new AdDownloadManager(adJobsService.Object, sitemapGrabberManager.Object);
+            var manager = new AdGrabberManager(adJobsService.Object, sitemapGrabberManager.Object);
             manager.AddGrabber("test_gabber", grabber.Object);
             var task = manager.Run(_tokenSource.Token);
             while (task.Status != TaskStatus.Running)
