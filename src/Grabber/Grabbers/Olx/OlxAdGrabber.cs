@@ -23,7 +23,10 @@ namespace Grabber.Grabbers.Olx
 
         public AdGrabJobResult Grab(AdGrabJob job)
         {
-            var result = new AdGrabJobResult();
+            var result = new AdGrabJobResult
+            {
+                Job = job
+            };
             var adResponse = _client.GetAsync(_config.GetAdvertDataUrl(job.AdId)).Result;
             if (adResponse.IsSuccessStatusCode)
             {

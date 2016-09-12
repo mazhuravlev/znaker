@@ -50,7 +50,7 @@ namespace Grabber.Managers
             return result == null ? null : new AdGrabJob
             {
                 SourceType = sourceType,
-                AdId = result.Body.ToString()
+                AdId = System.Text.Encoding.UTF8.GetString(result.Body)
             };
         }
 

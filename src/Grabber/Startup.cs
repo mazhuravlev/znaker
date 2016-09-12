@@ -46,10 +46,12 @@ namespace Grabber
 
             var sitemapManager = provider.GetService<ISitemapGrabberManager>();
             var sitemapGrabber = new OlxSitemapGrabber(olxUaConfig, new GrabberHttpClient());
-            sitemapManager.AddGrabber("olx_ua", sitemapGrabber, isEnabled: true);
+            sitemapManager.AddGrabber(SourceType.OlxUa.ToString(), sitemapGrabber, isEnabled: true);
             sitemapManager.Run(appLifetime.ApplicationStopping);
 
             var adManager = provider.GetService<IAdGrabberManager>();
+            var grabber = new OlxAdGrabber(olxUaConfig, new GrabberHttpClient());
+            adManager.AddGrabber(SourceType.OlxUa.ToString(), grabber);
             adManager.Run(appLifetime.ApplicationStopping);
 
             app.Run(async (context) =>

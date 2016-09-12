@@ -15,7 +15,9 @@
     "PostgreSqlProvider": {
       "target": "project"
     },
-    "Newtonsoft.Json": "9.0.1"
+    "Newtonsoft.Json": "9.0.1",
+    "System.Reactive.Linq": "3.0.0",
+    "System.Reactive.Core": "3.0.0"
   },
 
   "tools": {
