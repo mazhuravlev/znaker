@@ -47,6 +47,10 @@ namespace Grabber.Managers
             {
                 _jobDemand[sourceType] = quantity;
             }
+            if (_jobDemand[sourceType] < 0)
+            {
+                _jobDemand[sourceType] = 0;
+            }
         }
 
         public void AddGrabber(string name, ISitemapGrabber sitemapGrabber, TimeSpan? indexDownloadInterval = null,

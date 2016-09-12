@@ -21,7 +21,8 @@ namespace Grabber
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<ISitemapGrabberManager, SitemapGrabberManager>();
+            services.AddSingleton<ISitemapGrabberManager, SitemapGrabberManager>();
+            services.AddTransient<IAdGrabberManager, AdGrabberManager>();
             services.AddTransient<IAdJobsService, AdJobsService>();
             services.AddTransient<ISitemapService, SitemapService>();
         }
@@ -42,12 +43,14 @@ namespace Grabber
                "https://ssl.olx.ua/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
                "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
            );
+
             var sitemapManager = provider.GetService<ISitemapGrabberManager>();
             var sitemapGrabber = new OlxSitemapGrabber(olxUaConfig, new GrabberHttpClient());
             sitemapManager.AddGrabber("olx_ua", sitemapGrabber, isEnabled: true);
-            sitemapManager.AddJobDemand(SourceType.OlxUa, 1);
-
             sitemapManager.Run(CancellationToken.None);
+
+            var adManager = provider.GetService<IAdGrabberManager>();
+            adManager.Run(CancellationToken.None);
 
             app.Run(async (context) =>
             {
