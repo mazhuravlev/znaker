@@ -13,8 +13,6 @@ namespace GrabberServer.Grabbers.Managers
         List<SitemapEntry> GetSitemapsForType(SourceType sourceType);
 
         void MarkDownloaded(SitemapEntry sitemapEntry);
-
-        void SaveChanges();
     }
 
     public class SitemapService : ISitemapService
@@ -33,13 +31,21 @@ namespace GrabberServer.Grabbers.Managers
 
         public void SaveSitemaps(List<SitemapEntry> sitemapEntries)
         {
-            // TODO: save and update sitemaps
-            throw new NotImplementedException();
-        }
-
-        public void SaveChanges()
-        {
-            _grabberContext.SaveChanges();
+            foreach (var sitemapEntry in sitemapEntries)
+            {
+                var existingSitemapEntry =
+                    _grabberContext.SitemapEntries.FirstOrDefault(
+                        se => se.Loc == sitemapEntry.Loc && se.SourceType == sitemapEntry.SourceType);
+                if (existingSitemapEntry == null)
+                {
+                    _grabberContext.Add(sitemapEntry);
+                }
+                else
+                {
+                    existingSitemapEntry.Lastmod = sitemapEntry.Lastmod;
+                }
+                _grabberContext.SaveChanges();
+            }
         }
 
         public void MarkDownloaded(SitemapEntry sitemapEntry)

@@ -6,7 +6,7 @@ namespace GrabberServer.Grabbers
 {
     public interface IAdGrabber
     {
-        AdGrabResult Grab(AdDownloadJob job);
+        AdJobResult Grab(AdDownloadJob job);
 
         SourceType GetSourceType();
     }

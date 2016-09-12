@@ -21,13 +21,13 @@ namespace GrabberServer.Grabbers.Olx
             _client = client;
         }
 
-        public AdGrabResult Grab(AdDownloadJob job)
+        public AdJobResult Grab(AdDownloadJob job)
         {
-            var downloadResult = new AdGrabResult
+            var downloadResult = new AdJobResult
             {
                 DownloadJob = job
             };
-            var adResponse = _client.GetAsync(_config.GetAdvertDataUrl(int.Parse(job.AdId))).Result;
+            var adResponse = _client.GetAsync(_config.GetAdvertDataUrl(job.AdId)).Result;
             if (adResponse.IsSuccessStatusCode)
             {
                 downloadResult.Text = ExtractAdTextFromJsonString(adResponse.Content.ReadAsStringAsync().Result);
@@ -36,7 +36,7 @@ namespace GrabberServer.Grabbers.Olx
             {
                 return downloadResult;
             }
-            var contactsResponse = _client.GetAsync(_config.GetAdvertContactUrl(int.Parse(job.AdId))).Result;
+            var contactsResponse = _client.GetAsync(_config.GetAdvertContactUrl(job.AdId)).Result;
             if (contactsResponse.IsSuccessStatusCode)
             {
                 downloadResult.Contacts = ExtractAdContactsFromJsonString(contactsResponse.Content.ReadAsStringAsync().Result);

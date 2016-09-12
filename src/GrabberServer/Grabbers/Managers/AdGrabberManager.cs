@@ -10,8 +10,10 @@ using PostgreSqlProvider.Entities;
 
 namespace GrabberServer.Grabbers.Managers
 {
+
     public interface IAdGrabberManager
     {
+ 
     }
 
     public class AdGrabberManager : IAdGrabberManager
@@ -24,8 +26,7 @@ namespace GrabberServer.Grabbers.Managers
 
         private static readonly TimeSpan CycleDelay = TimeSpan.FromSeconds(1);
 
-        public AdGrabberManager(IAdJobsService adJobsService,
-            ISitemapGrabberManager sitemapGrabberManager = null)
+        public AdGrabberManager(IAdJobsService adJobsService, ISitemapGrabberManager sitemapGrabberManager = null)
         {
             _adJobsService = adJobsService;
             _sitemapGrabberManager = sitemapGrabberManager;
@@ -82,32 +83,41 @@ namespace GrabberServer.Grabbers.Managers
                 }
                 else
                 {
-                    throw new Exception("OK: Has finished jobs!");
-                    // TODO: save finished jobs results and delete their tasks
+                    foreach (var grabberEntry in _grabberEntries)
+                    {
+                        foreach (var job in grabberEntry.Value.Jobs.ToList())
+                        {
+                            if (!job.IsCompleted) continue;
+                            _adJobsService.SaveJobResult(job.Result);
+                            grabberEntry.Value.Jobs.Remove(job);                            
+                        }
+                    }
                 }
             }
         }
+
+       
 
         public class GrabberEntry
         {
             public IAdGrabber Grabber;
             public bool IsEnabled = true;
-            public List<Task<AdGrabResult>> Jobs = new List<Task<AdGrabResult>>();
+            public List<Task<AdJobResult>> Jobs = new List<Task<AdJobResult>>();
             public int JobsLimit = 1;
         }
 
         private JobDemand GetJobDemand()
         {
             var list = _grabberEntries.Values.Where(g => g.IsEnabled)
-                .Select(
-                    g => new KeyValuePair<SourceType, int>(g.Grabber.GetSourceType(), g.Jobs.Count - g.JobsLimit))
-                .ToList();
+                    .Select(
+                        g => new KeyValuePair<SourceType, int>(g.Grabber.GetSourceType(), g.JobsLimit - g.Jobs.Count))
+                    .ToList();
             return JobDemand.FromList(list);
         }
 
         private bool HasFinishedJobs()
         {
-            return _grabberEntries.Values.Select(ge => ge.Jobs.Count(j => j.IsCompleted)).Sum(r => r) > 0;
+            return _grabberEntries.Values.Select(ge => ge.Jobs.ToList().Count(j => j.IsCompleted)).Sum(r => r) > 0;
         }
     }
 }

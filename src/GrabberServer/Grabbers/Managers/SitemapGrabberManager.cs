@@ -10,6 +10,11 @@ namespace GrabberServer.Grabbers.Managers
     public interface ISitemapGrabberManager
     {
         void RequestMoreJobs(JobDemand jobDemand);
+
+        void AddGrabber(string name, ISitemapGrabber sitemapGrabber, TimeSpan? indexDownloadInterval = null,
+            bool isEnabled = false);
+
+        Task Run(CancellationToken cancellationToken);
     }
 
     public class SitemapGrabberManager : ISitemapGrabberManager

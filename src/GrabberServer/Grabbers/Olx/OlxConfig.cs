@@ -16,12 +16,12 @@
             OlxType = olxType;
         }
 
-        public string GetAdvertDataUrl(int id)
+        public string GetAdvertDataUrl(string id)
         {
             return string.Format(_advertDataUrlTemplate, id);
         }
 
-        public string GetAdvertContactUrl(int id)
+        public string GetAdvertContactUrl(string id)
         {
             return string.Format(_advertContactUrlTemplate, id);
         }

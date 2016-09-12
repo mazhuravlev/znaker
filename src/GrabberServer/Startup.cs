@@ -41,7 +41,7 @@ namespace GrabberServer
             services.AddDbContext<ZnakerContext>(
                 c => c.UseNpgsql(Configuration["ConnectionStrings:ZnakerConnectionString"]), ServiceLifetime.Transient);
 
-            services.AddSingleton<SitemapGrabberManager>();
+            services.AddSingleton<ISitemapGrabberManager, SitemapGrabberManager>();
             services.AddSingleton<AdGrabberManager>();
             services.AddTransient<IAdJobsService, AdJobsService>();
             services.AddTransient<ISitemapService, SitemapService>();
@@ -52,7 +52,8 @@ namespace GrabberServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider provider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            IServiceProvider provider)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -75,11 +76,15 @@ namespace GrabberServer
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            var olxUaConfig = new OlxConfig(OlxType.Ua, "http://olx.ua/sitemap.xml", "PlaceHereAdvdataurl{0}",
-                "PlaceHereAdvcontacturl{0}");
-            var sitemapManager = provider.GetService<SitemapGrabberManager>();
+            var olxUaConfig = new OlxConfig(
+                OlxType.Ua,
+                "http://olx.ua/sitemap.xml",
+                "https://ssl.olx.ua/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
+                "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
+            );
+            var sitemapManager = provider.GetService<ISitemapGrabberManager>();
             var sitemapGrabber = new OlxSitemapGrabber(olxUaConfig, new GrabberHttpClient());
-            sitemapManager.AddGrabber("olx_ua", sitemapGrabber);
+            sitemapManager.AddGrabber("olx_ua", sitemapGrabber, isEnabled: true);
 
             var adManager = provider.GetService<AdGrabberManager>();
             var adGrabber = new OlxAdGrabber(olxUaConfig, new GrabberHttpClient());
