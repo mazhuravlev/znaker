@@ -76,7 +76,7 @@ namespace GrabberServer.Grabbers.Managers
                 entry = _znakerContext.Entries.First(
                     e => e.IdOnSource == jobResult.DownloadJob.AdId && e.SourceId == jobResult.DownloadJob.SourceType);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 entry = new Entry
                 {
