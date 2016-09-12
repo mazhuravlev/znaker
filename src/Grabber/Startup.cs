@@ -28,7 +28,7 @@ namespace Grabber
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider provider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider provider, , IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole();
 
@@ -50,7 +50,7 @@ namespace Grabber
             sitemapManager.Run(CancellationToken.None);
 
             var adManager = provider.GetService<IAdGrabberManager>();
-            adManager.Run(CancellationToken.None);
+            adManager.Run(appLifetime.ApplicationStopping);
 
             app.Run(async (context) =>
             {
