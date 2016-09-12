@@ -46,9 +46,8 @@ namespace Grabber.Grabbers.Olx
             return null != GetNextSitemap(sitemaps);
         }
 
-        public List<string> GrabNextSitemap(List<Entities.SitemapEntry> sitemaps)
+        public List<string> GrabSitemap(SitemapEntry sitemap)
         {
-            var sitemap = GetNextSitemap(sitemaps);
             if (null == sitemap)
             {
                 throw new Exception("no next sitemap");
@@ -66,7 +65,7 @@ namespace Grabber.Grabbers.Olx
             return (SourceType) _config.OlxType;
         }
 
-        private static SitemapEntry GetNextSitemap(IEnumerable<SitemapEntry> sitemaps)
+        public SitemapEntry GetNextSitemap(List<SitemapEntry> sitemaps)
         {
             return sitemaps.First(s => s.Lastmod != s.DownloadedLastmod);
         }

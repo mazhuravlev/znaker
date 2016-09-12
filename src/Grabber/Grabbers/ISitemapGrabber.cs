@@ -12,7 +12,9 @@ namespace Grabber.Grabbers
 
         bool HasSitemapsToGrab(List<SitemapEntry> sitemaps);
 
-        List<string> GrabNextSitemap(List<SitemapEntry> sitemaps);
+        List<string> GrabSitemap(SitemapEntry sitemap);
+
+        SitemapEntry GetNextSitemap(List<SitemapEntry> sitemaps);
 
         SourceType GetSourceType();
     }
