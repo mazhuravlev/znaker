@@ -8,6 +8,6 @@ namespace Grabber.Infrastructure.Entries
         public IAdvertGrabber Grabber;
         public bool IsEnabled = true;
         public int JobsLimit = 1;
-        public Dictionary<string, IDisposable> Jobs = new Dictionary<string, IDisposable>();
+        public int RunningJobsCount = 0;
     }
 }
