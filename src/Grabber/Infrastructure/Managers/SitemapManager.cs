@@ -1,39 +1,29 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Grabber.Grabbers;
+using Grabber.Infrastructure.Entries;
 using Grabber.Models;
 using Infrastructure;
 using Microsoft.Extensions.Logging;
 
-namespace Grabber.Managers
+namespace Grabber.Infrastructure.Managers
 {
-    public interface ISitemapGrabberManager
-    {
-        void AddGrabber(string name, ISitemapGrabber sitemapGrabber, TimeSpan? indexDownloadInterval = null,
-            bool isEnabled = false);
-
-        Task Run(CancellationToken cancellationToken);
-
-        void AddJobDemand(SourceType sourceType, int quantity);
-    }
-
-    public class SitemapGrabberManager : ISitemapGrabberManager
+    public class SitemapManager : ISitemapManager
     {
         private readonly ISitemapService _sitemapService;
-        private readonly IAdJobsService _adJobsService;
+        private readonly IAdvertService _advertService;
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, GrabberEntry> _grabberMap = new Dictionary<string, GrabberEntry>();
+        private readonly Dictionary<string, SitemapEntry> _grabberMap = new Dictionary<string, SitemapEntry>();
         private readonly Dictionary<SourceType, int> _jobDemand = new Dictionary<SourceType, int>();
         public TimeSpan CycleDelay;
 
-        public SitemapGrabberManager(ISitemapService sitemapService, IAdJobsService adJobsService, ILogger<SitemapGrabberManager> logger)
+        public SitemapManager(ISitemapService sitemapService, IAdvertService advertService, ILogger<SitemapManager> logger)
         {
             _sitemapService = sitemapService;
-            _adJobsService = adJobsService;
+            _advertService = advertService;
             _logger = logger;
         }
 
@@ -53,12 +43,9 @@ namespace Grabber.Managers
             }
         }
 
-        public void AddGrabber(string name, ISitemapGrabber sitemapGrabber, TimeSpan? indexDownloadInterval = null,
-            bool isEnabled = true)
+        public void AddGrabber(string name, ISitemapGrabber sitemapGrabber, TimeSpan? indexDownloadInterval = null, bool isEnabled = true)
         {
-            _grabberMap.Add(
-                name,
-                new GrabberEntry
+            _grabberMap.Add(name, new SitemapEntry
                 {
                     Grabber = sitemapGrabber,
                     Name = name,
@@ -77,14 +64,16 @@ namespace Grabber.Managers
                     var indexGrabberEntry = GetNextIndexGrabber();
                     if (indexGrabberEntry != null)
                     {
-                        _sitemapService.SaveSitemaps(indexGrabberEntry.Grabber.GetSourceType(),
-                            indexGrabberEntry.Grabber.GrabIndex());
+                        _sitemapService.SaveSitemaps(
+                            indexGrabberEntry.Grabber.GetSourceType(),
+                            indexGrabberEntry.Grabber.GrabIndex()
+                        );
                     }
                     var downloadGrabberEntry = GetNextDownloadGrabber();
                     if (null != downloadGrabberEntry)
                     {
                         var sitemap = downloadGrabberEntry.Grabber.GetNextSitemap(
-                            _sitemapService.GetSitemapsForType(downloadGrabberEntry.Grabber.GetSourceType()
+                                _sitemapService.GetSitemapsForType(downloadGrabberEntry.Grabber.GetSourceType()
                             )
                         );
                         HandleSitemapGrabResult(
@@ -105,43 +94,33 @@ namespace Grabber.Managers
             _jobDemand[sourceType] -= adIds.Count;
             foreach (var adId in adIds)
             {
-                _adJobsService.PushAdJob(new AdGrabJob
+                _advertService.PushJob(new AdvertJob
                 {
                     SourceType = sourceType,
-                    AdId = adId
+                    Id = adId
                 });
             }
         }
 
-        protected class GrabberEntry
-        {
-            public ISitemapGrabber Grabber;
-            public string Name;
-            public TimeSpan IndexDownloadInterval;
-            public bool IsEnabled = true;
-            public DateTime LastDownloadTime = DateTime.Now.AddYears(-1);
-            public DateTime LastIndexDownloadTime = DateTime.Now.AddYears(-1);
-        }
-
-        private GrabberEntry GetNextIndexGrabber()
+        private SitemapEntry GetNextIndexGrabber()
         {
             return _grabberMap.Values.FirstOrDefault(g =>
-                    g.IsEnabled &&
-                    g.LastIndexDownloadTime + g.IndexDownloadInterval < DateTime.Now
+                g.IsEnabled &&
+                g.LastIndexDownloadTime + g.IndexDownloadInterval < DateTime.Now
             );
         }
 
-        private GrabberEntry GetNextDownloadGrabber()
+        private SitemapEntry GetNextDownloadGrabber()
         {
             if (_jobDemand.Count == 0) return null;
             var desirousSources = _jobDemand.Where(j => j.Value > 0).OrderByDescending(j => j.Value).ToList();
             return desirousSources
-                .Select(
-                    desirousSource =>
-                        _grabberMap.Values.FirstOrDefault(
-                            g =>
-                                g.IsEnabled &&
-                                g.Grabber.HasSitemapsToGrab(_sitemapService.GetSitemapsForType(g.Grabber.GetSourceType()))))
+                .Select(c =>
+                    _grabberMap.Values.FirstOrDefault(g =>
+                        g.IsEnabled &&
+                        g.Grabber.HasSitemapsToGrab(_sitemapService.GetSitemapsForType(g.Grabber.GetSourceType()))
+                    )
+                )
                 .FirstOrDefault(grabber => grabber != null);
         }
     }

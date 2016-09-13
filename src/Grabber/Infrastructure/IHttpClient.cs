@@ -1,9 +1,9 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Grabber.Http
+namespace Grabber.Infrastructure
 {
-    public interface IGrabberHttpClient
+    public interface IHttpClient
     {
         Task<HttpResponseMessage> GetAsync(string url);
     }

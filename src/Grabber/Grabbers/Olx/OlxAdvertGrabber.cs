@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Grabber.Infrastructure;
 using Grabber.Models;
 using Infrastructure;
 using Newtonsoft.Json;
@@ -10,24 +9,24 @@ using Newtonsoft.Json.Linq;
 
 namespace Grabber.Grabbers.Olx
 {
-    public class OlxAdGrabber : IAdGrabber
+    public class OlxAdvertGrabber : IAdvertGrabber
     {
         private readonly OlxConfig _config;
-        private readonly HttpClient _client;
+        private readonly IHttpClient _client;
 
-        public OlxAdGrabber(OlxConfig config, HttpClient client)
+        public OlxAdvertGrabber(OlxConfig config, IHttpClient client)
         {
             _config = config;
             _client = client;
         }
 
-        public AdGrabJobResult Grab(AdGrabJob job)
+        public AdvertJobResult Process(AdvertJob job)
         {
-            var result = new AdGrabJobResult
+            var result = new AdvertJobResult
             {
                 Job = job
             };
-            var adResponse = _client.GetAsync(_config.GetAdvertDataUrl(job.AdId)).Result;
+            var adResponse = _client.GetAsync(_config.GetAdvertDataUrl(job.Id)).Result;
             if (adResponse.IsSuccessStatusCode)
             {
                 result.Text = ExtractAdTextFromJsonString(adResponse.Content.ReadAsStringAsync().Result);
@@ -36,7 +35,7 @@ namespace Grabber.Grabbers.Olx
             {
                 return result;
             }
-            var contactsResponse = _client.GetAsync(_config.GetAdvertContactUrl(job.AdId)).Result;
+            var contactsResponse = _client.GetAsync(_config.GetAdvertContactUrl(job.Id)).Result;
             if (contactsResponse.IsSuccessStatusCode)
             {
                 result.Contacts = ExtractAdContactsFromJsonString(contactsResponse.Content.ReadAsStringAsync().Result);
@@ -83,16 +82,12 @@ namespace Grabber.Grabbers.Olx
                 default:
                     throw new Exception("Unknown type: " + jObject.Type);
             }
-            return phoneStringList
-                .Select(s => new KeyValuePair<ContactType, string>(ContactType.Phone, s))
-                .ToList();
+            return phoneStringList.Select(s => new KeyValuePair<ContactType, string> (ContactType.Phone, s)).ToList();
         }
 
         private static List<string> ExtractPhonesFromJson(IEnumerable<JToken> phoneJtokenList)
         {
-            return phoneJtokenList
-                .Select(jt => (string)jt["uri"])
-                .ToList();
+            return phoneJtokenList.Select(jt => (string) jt["uri"]).ToList();
         }
 
         private static string ExtractAdTextFromJsonString(string adJsonString)
@@ -110,7 +105,7 @@ namespace Grabber.Grabbers.Olx
             string text;
             try
             {
-                text = (string)jObject["ad"]["title"] + ", " + (string)jObject["ad"]["description"];
+                text = (string) jObject["ad"]["title"] + ", " + (string) jObject["ad"]["description"];
             }
             catch (NullReferenceException)
             {

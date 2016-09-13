@@ -2,11 +2,11 @@
 using Grabber.Models;
 using Infrastructure;
 
-namespace Grabber.Grabbers
+namespace Grabber.Infrastructure
 {
-    public interface IAdGrabber
+    public interface IAdvertGrabber
     {
-        AdGrabJobResult Grab(AdGrabJob job);
+        AdvertJobResult Process(AdvertJob job);
 
         SourceType GetSourceType();
     }

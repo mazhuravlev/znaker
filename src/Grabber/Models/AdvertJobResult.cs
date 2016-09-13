@@ -3,9 +3,9 @@ using Infrastructure;
 
 namespace Grabber.Models
 {
-    public class AdGrabJobResult
+    public class AdvertJobResult
     {
-        public AdGrabJob Job;
+        public AdvertJob Job;
         public string Text;
         public List<KeyValuePair<ContactType, string>> Contacts;
     }

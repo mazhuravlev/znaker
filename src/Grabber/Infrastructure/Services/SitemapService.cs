@@ -4,22 +4,11 @@ using Grabber.Entities;
 using Infrastructure;
 using RabbitMQ.Client;
 
-namespace Grabber.Managers
+namespace Grabber.Infrastructure.Services
 {
-    public interface ISitemapService
-    {
-        void SaveSitemaps(SourceType sourceType, List<SitemapEntry> sitemapEntries);
-
-        List<SitemapEntry> GetSitemapsForType(SourceType sourceType);
-
-        void MarkSitemapAsDownloaded(SitemapEntry sitemapEntry);
-    }
-
     public class SitemapService : ISitemapService
     {
-        private readonly Dictionary<SourceType, List<SitemapEntry>> _sitemaps =
-            new Dictionary<SourceType, List<SitemapEntry>>();
-
+        private readonly Dictionary<SourceType, List<SitemapEntry>> _sitemaps = new Dictionary<SourceType, List<SitemapEntry>>();
 
         public void SaveSitemaps(SourceType sourceType, List<SitemapEntry> sitemapEntries)
         {
@@ -43,9 +32,7 @@ namespace Grabber.Managers
 
         public List<SitemapEntry> GetSitemapsForType(SourceType sourceType)
         {
-            return _sitemaps.ContainsKey(sourceType)
-                ? _sitemaps[sourceType]
-                : new List<SitemapEntry>();
+            return _sitemaps.ContainsKey(sourceType) ? _sitemaps[sourceType] : new List<SitemapEntry>();
         }
 
         public void MarkSitemapAsDownloaded(SitemapEntry sitemapEntry)

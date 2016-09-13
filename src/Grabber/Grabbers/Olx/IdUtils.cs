@@ -5,6 +5,8 @@ namespace Grabber.Grabbers.Olx
 {
     public class IdUtils
     {
+        private const string Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
         public static long DecryptOlxId(string olxId)
         {
             return ArbitraryToDecimalSystem(SwapCase(olxId), 62);
@@ -12,19 +14,18 @@ namespace Grabber.Grabbers.Olx
 
         private static string SwapCase(string input)
         {
-            return new string(input.Select(c => char.IsLetter(c)
-                ? (char.IsUpper(c)
-                    ? char.ToLower(c)
-                    : char.ToUpper(c))
-                : c).ToArray());
+            return new string(
+                input
+                    .Select( c => char.IsLetter(c) ? (char.IsUpper(c) ? char.ToLower(c) : char.ToUpper(c)) : c)
+                    .ToArray()
+            );
         }
 
         private static long ArbitraryToDecimalSystem(string number, int radix)
         {
-            const string digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            if (radix < 2 || radix > digits.Length)
+            if (radix < 2 || radix > Digits.Length)
             {
-                throw new ArgumentException("The radix must be >= 2 and <= " + digits.Length);
+                throw new ArgumentException("The radix must be >= 2 and <= " + Digits.Length);
             }
             if (string.IsNullOrEmpty(number))
             {
@@ -40,11 +41,10 @@ namespace Grabber.Grabbers.Olx
                     result = -result;
                     break;
                 }
-                var digit = digits.IndexOf(c);
+                var digit = Digits.IndexOf(c);
                 if (digit == -1)
                 {
-                    throw new ArgumentException("Invalid character in the arbitrary numeral system number",
-                        nameof(number));
+                    throw new ArgumentException("Invalid character in the arbitrary numeral system number", nameof(number));
                 }
                 result += digit * multiplier;
                 multiplier *= radix;

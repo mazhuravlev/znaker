@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Infrastructure;
 using Grabber.Entities;
 
-namespace Grabber.Grabbers
+namespace Grabber.Infrastructure
 {
     public interface ISitemapGrabber
     {
