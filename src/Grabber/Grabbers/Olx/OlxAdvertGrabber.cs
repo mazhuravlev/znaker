@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using Grabber.Infrastructure;
 using Grabber.Models;
 using Infrastructure;
@@ -33,7 +34,7 @@ namespace Grabber.Grabbers.Olx
             }
             else
             {
-                return result;
+                throw new HttpRequestException("Response code: " + adResponse.StatusCode);
             }
             var contactsResponse = _client.GetAsync(_config.GetAdvertContactUrl(job.Id)).Result;
             if (contactsResponse.IsSuccessStatusCode)
@@ -77,12 +78,12 @@ namespace Grabber.Grabbers.Olx
                     phoneStringList = ExtractPhonesFromJson(phoneJToken.Children());
                     break;
                 case JTokenType.Object:
-                    phoneStringList = ExtractPhonesFromJson(new List<JToken> { phoneJToken });
+                    phoneStringList = ExtractPhonesFromJson(new List<JToken> {phoneJToken});
                     break;
                 default:
                     throw new Exception("Unknown type: " + jObject.Type);
             }
-            return phoneStringList.Select(s => new KeyValuePair<ContactType, string> (ContactType.Phone, s)).ToList();
+            return phoneStringList.Select(s => new KeyValuePair<ContactType, string>(ContactType.Phone, s)).ToList();
         }
 
         private static List<string> ExtractPhonesFromJson(IEnumerable<JToken> phoneJtokenList)
@@ -92,26 +93,8 @@ namespace Grabber.Grabbers.Olx
 
         private static string ExtractAdTextFromJsonString(string adJsonString)
         {
-            JObject jObject;
-            try
-            {
-                jObject = JsonConvert.DeserializeObject<JObject>(adJsonString);
-            }
-            catch (JsonReaderException)
-            {
-                // invalid json
-                return null;
-            }
-            string text;
-            try
-            {
-                text = (string) jObject["ad"]["title"] + ", " + (string) jObject["ad"]["description"];
-            }
-            catch (NullReferenceException)
-            {
-                // json doesn't have required fields
-                return null;
-            }
+            var jObject = JsonConvert.DeserializeObject<JObject>(adJsonString);
+            var   text = (string) jObject["ad"]["title"] + ", " + (string) jObject["ad"]["description"];
             return TextUtils.CleanSpacesAndNewlines(text);
         }
     }

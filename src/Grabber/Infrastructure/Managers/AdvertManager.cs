@@ -72,7 +72,7 @@ namespace Grabber.Infrastructure.Managers
 
         private void HandleError(Exception e, AdvertEntry entry, AdvertJob job)
         {
-            _logger.LogWarning(new EventId(), e, $"Grabber {job.SourceType} task {job.Id} failed");
+            _logger.LogWarning(new EventId(), $"Grabber {job.SourceType} task {job.Id} failed: {e.Message}");
             entry.RunningJobsCount--;
         }
 

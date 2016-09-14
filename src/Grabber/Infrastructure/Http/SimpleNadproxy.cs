@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,13 +13,15 @@ namespace Grabber.Infrastructure.Http
     public class SimpleNadproxy : IHttpClient
     {
         private readonly IProxyService _proxyService;
+        private readonly ILogger _logger;
         private readonly List<HttpClient> _httpClients = new List<HttpClient>();
         private int _counter = 0;
         private const int ProxyLimit = 10;
 
-        public SimpleNadproxy(IProxyService proxyService)
+        public SimpleNadproxy(IProxyService proxyService, ILogger<SimpleNadproxy> logger)
         {
             _proxyService = proxyService;
+            _logger = logger;
         }
 
         public Task<HttpResponseMessage> GetAsync(string url)
@@ -31,15 +34,39 @@ namespace Grabber.Infrastructure.Http
             {
                 RequestProxy();
             }
-            return _httpClients[_counter++ % _httpClients.Count].GetAsync(url);
+            _counter++;
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromSeconds(5));
+            return _httpClients[GetProxyNumber()].GetAsync(url, cts.Token);
+        }
+
+        private static CancellationToken GetTimeoutToken(int seconds)
+        {
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromSeconds(seconds));
+            return cts.Token;
+        }
+
+        private int GetProxyNumber()
+        {
+            return _counter%_httpClients.Count;
+        }
+
+        public void AddProxy(IWebProxy proxy)
+        {
+            _httpClients.Add(new HttpClient(new HttpClientHandler
+                    {
+                        Proxy = proxy,
+                        UseProxy = true
+                    })
+                );
         }
 
         private void RequestProxy()
         {
             try
             {
-                var proxy = _proxyService.GetProxy();
-                // TODO: somehow use the proxy
+                AddProxy(_proxyService.GetProxy());
             }
             catch (NoResultException)
             {

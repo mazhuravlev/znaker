@@ -28,10 +28,12 @@ namespace Grabber
             services.AddSingleton<IAdvertService, AdvertService>();
             services.AddSingleton<ISitemapService, SitemapService>();
             services.AddSingleton<IProxyService, ProxyService>();
+            services.AddSingleton<SimpleNadproxy>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider provider, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            IServiceProvider provider, IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole();
 
@@ -41,28 +43,27 @@ namespace Grabber
             }
 
             var olxUaConfig = new OlxConfig(
-               OlxType.Ua,
-               "http://olx.ua/sitemap.xml",
-               "https://ssl.olx.ua/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
-               "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
-           );
+                OlxType.Ua,
+                "http://olx.ua/sitemap.xml",
+                "https://ssl.olx.ua/i2/obyavlenie/?json=1&id={0}&version=2.3.2",
+                "https://ssl.olx.ua/i2/ajax/ad/getcontact/?type=phone&json=1&id={0}&version=2.3.2"
+            );
 
             var sitemapManager = provider.GetService<ISitemapManager>();
             var sitemapGrabber = new OlxSitemapGrabber(olxUaConfig, new PlainHttpClient());
             sitemapManager.AddGrabber(SourceType.OlxUa.ToString(), sitemapGrabber, isEnabled: true);
             sitemapManager.Run(appLifetime.ApplicationStopping);
 
-            var nadproxy = new SimpleNadproxy(provider.GetService<IProxyService>());
-
+            var nadproxy = provider.GetService<SimpleNadproxy>();
+            nadproxy.AddProxy(new Proxy {Host = "127.0.0.1", Port = 3128});
+            nadproxy.AddProxy(new Proxy {Host = "127.0.0.1", Port = 3128});
+            nadproxy.AddProxy(new Proxy {Host = "46.101.22.147", Port = 8118 });
             var adManager = provider.GetService<IAdvertManager>();
             var grabber = new OlxAdvertGrabber(olxUaConfig, nadproxy);
             adManager.AddGrabber(SourceType.OlxUa.ToString(), grabber);
             adManager.Run(appLifetime.ApplicationStopping);
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });
         }
     }
 }

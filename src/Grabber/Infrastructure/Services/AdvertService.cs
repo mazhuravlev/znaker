@@ -11,21 +11,18 @@ namespace Grabber.Infrastructure.Services
 
         public AdvertService()
         {
-            var factory = new ConnectionFactory {HostName = "localhost"};
-            var connection = factory.CreateConnection();
-            _channel = connection.CreateModel();
-        }
-
-        public void PushJob(AdvertJob job)
-        {
+            _channel = new ConnectionFactory {HostName = "localhost"}.CreateConnection().CreateModel();
             _channel.QueueDeclare(
-                queue: QueueName(job.SourceType),
+                queue: QueueName(SourceType.OlxUa),
                 durable: false,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null
             );
+        }
 
+        public void PushJob(AdvertJob job)
+        {
             _channel.BasicPublish(
                 exchange: "",
                 routingKey: QueueName(job.SourceType),
@@ -36,21 +33,14 @@ namespace Grabber.Infrastructure.Services
 
         public AdvertJob GetJob(SourceType sourceType)
         {
-            _channel.QueueDeclare(
-                queue: QueueName(sourceType),
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null
-            );
-
             var result = _channel.BasicGet(QueueName(sourceType), true);
-
-            return result == null ? null : new AdvertJob
-            {
-                SourceType = sourceType,
-                Id = Encoding.UTF8.GetString(result.Body)
-            };
+            return result == null
+                ? null
+                : new AdvertJob
+                {
+                    SourceType = sourceType,
+                    Id = Encoding.UTF8.GetString(result.Body)
+                };
         }
 
         private static string QueueName(SourceType sourceType)

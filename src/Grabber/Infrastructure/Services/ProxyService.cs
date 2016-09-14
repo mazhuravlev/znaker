@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
 using System.Text;
+using Grabber.Infrastructure.Http;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 
@@ -9,12 +8,6 @@ namespace Grabber.Infrastructure.Services
 {
     public class NoResultException : Exception
     {
-    }
-
-    public class Proxy
-    {
-        public string Host;
-        public int Port;
     }
 
     public interface IProxyService
