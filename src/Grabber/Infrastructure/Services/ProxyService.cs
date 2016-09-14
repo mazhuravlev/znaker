@@ -22,7 +22,7 @@ namespace Grabber.Infrastructure.Services
         Proxy GetProxy();
     }
 
-    public class ProxyService
+    public class ProxyService : IProxyService
     {
         private readonly IModel _channel;
         private const string QueueName = "proxy_list";
@@ -46,3 +46,4 @@ namespace Grabber.Infrastructure.Services
             return JsonConvert.DeserializeObject<Proxy>(Encoding.UTF8.GetString(proxyListEntry.Body));
         }
     }
+}

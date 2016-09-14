@@ -27,6 +27,7 @@ namespace Grabber
             services.AddSingleton<IAdvertManager, AdvertManager>();
             services.AddSingleton<IAdvertService, AdvertService>();
             services.AddSingleton<ISitemapService, SitemapService>();
+            services.AddSingleton<IProxyService, ProxyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,8 +52,10 @@ namespace Grabber
             sitemapManager.AddGrabber(SourceType.OlxUa.ToString(), sitemapGrabber, isEnabled: true);
             sitemapManager.Run(appLifetime.ApplicationStopping);
 
+            var nadproxy = new SimpleNadproxy(provider.GetService<IProxyService>());
+
             var adManager = provider.GetService<IAdvertManager>();
-            var grabber = new OlxAdvertGrabber(olxUaConfig, new PlainHttpClient());
+            var grabber = new OlxAdvertGrabber(olxUaConfig, nadproxy);
             adManager.AddGrabber(SourceType.OlxUa.ToString(), grabber);
             adManager.Run(appLifetime.ApplicationStopping);
 
