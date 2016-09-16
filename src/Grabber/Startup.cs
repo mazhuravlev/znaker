@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Grabber
 {
@@ -23,6 +24,15 @@ namespace Grabber
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+            services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
             services.AddSingleton<ISitemapManager, SitemapManager>();
             services.AddSingleton<IAdvertManager, AdvertManager>();
             services.AddSingleton<IAdvertService, AdvertService>();
@@ -36,6 +46,7 @@ namespace Grabber
             IServiceProvider provider, IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole();
+//            loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
@@ -63,7 +74,15 @@ namespace Grabber
             adManager.AddGrabber(SourceType.OlxUa.ToString(), grabber);
             adManager.Run(appLifetime.ApplicationStopping);
 
-            app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });
+            //app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });
+
+            app.UseDeveloperExceptionPage();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}");
+            });
         }
     }
 }
