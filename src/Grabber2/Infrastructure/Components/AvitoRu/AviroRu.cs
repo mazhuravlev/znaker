@@ -9,6 +9,8 @@ namespace Grabber2.Infrastructure.Components.AvitoRu
     public class AviroRu : IServerComponent
     {
         private readonly Guid _componentId = new Guid("3B5C3E28-DC1B-4033-9B69-64F82DF77CFC");
+        private readonly string _componentName = "AvitoRu-v1";
+
         private LoggingService _log;
         public void Configure(IServiceProvider provider)
         {
@@ -18,10 +20,11 @@ namespace Grabber2.Infrastructure.Components.AvitoRu
 
         public void Start(CancellationToken cancellationToken)
         {
+            _log.ComponetStarted(this);
             var t = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
-                _log.Log(this, 1, "ping" + t);
+                _log.Log(LogLevel.Information, this, "ping" + t);
 
 
                 if (t++ > 3)
@@ -36,7 +39,7 @@ namespace Grabber2.Infrastructure.Components.AvitoRu
 
         public string GetName()
         {
-            return "AvitoRu-v1";
+            return _componentName;
         }
 
         public Guid GetId()

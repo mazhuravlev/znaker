@@ -8,10 +8,12 @@ namespace Grabber2.Infrastructure.Services.Logging
 {
     public class LoggingModel
     {
+        public Guid SessionId;
         public Guid ComponentId;
+        public Guid? RelatedComponentId;
         public DateTime CreatedAt;
-        public int Level;
-        public int LogType;
+        public LogLevel Level;
         public string Message;
+        public string Exception;
     }
 }

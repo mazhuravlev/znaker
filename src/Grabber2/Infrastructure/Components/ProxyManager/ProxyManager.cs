@@ -10,6 +10,8 @@ namespace Grabber2.Infrastructure.Components.ProxyManager
     public class ProxyManager : IServerComponent
     {
         private readonly Guid _componentId = new Guid("CB8E34B4-D13A-4D64-AC16-FB329D86334B");
+        private readonly string _componentName = "ProxyManager-v1";
+
         private LoggingService _log;
         public void Configure(IServiceProvider provider)
         {
@@ -19,10 +21,11 @@ namespace Grabber2.Infrastructure.Components.ProxyManager
 
         public void Start(CancellationToken cancellationToken)
         {
+            _log.ComponetStarted(this);
             var t = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
-                _log.Log(this, 1, "ping " + t++);
+                _log.Log(LogLevel.Information , this, "ping " + t++);
                 Task.Delay(2500, cancellationToken).Wait(cancellationToken);
             }
             //throw new NotImplementedException();
@@ -30,7 +33,7 @@ namespace Grabber2.Infrastructure.Components.ProxyManager
 
         public string GetName()
         {
-            return "ProxyManager-v1";
+            return _componentName;
         }
 
         public Guid GetId()

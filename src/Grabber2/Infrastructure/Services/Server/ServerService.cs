@@ -11,28 +11,33 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Grabber2.Infrastructure.Services.Server
 {
-    public class ServerService
+    public class ServerService : IGeneralComponent
     {
+        private readonly Guid _componentId = new Guid("1878E9A4-4BA2-4279-B19F-11064BAED377");
+        private readonly string _componentName = "ServerService-V1";
+
+
         private readonly ConcurrentQueue<ComponentContainer> _components = new ConcurrentQueue<ComponentContainer>();
         private readonly IServiceProvider _serviceProvider;
         private readonly IApplicationLifetime _appLifetime;
         private readonly ConfigurationService _configurationService;
-        private readonly LoggingService _loggingService;
+        private readonly LoggingService _log;
 
         public ServerService(IServiceProvider serviceProvider, IApplicationLifetime appLifetime,
-            ConfigurationService configurationService, LoggingService loggingService)
+            ConfigurationService configurationService, LoggingService log)
         {
             _serviceProvider = serviceProvider;
             _appLifetime = appLifetime;
             _configurationService = configurationService;
-            _loggingService = loggingService;
+            _log = log;
+            _log.ComponetStarted(this);
         }
 
         public void RegisterComponent(IServerComponent component)
         {
             component.Configure(_serviceProvider);
             _components.Enqueue(new ComponentContainer(component));
-            _loggingService.ComponentStatus(component, 0, "registred");
+            _log.Log(LogLevel.Information, this ,component, $"registred component:{component.GetName()}:{component.GetId()}");
         }
 
         public void Start()
@@ -61,21 +66,21 @@ namespace Grabber2.Infrastructure.Services.Server
                                     if (config.RequestStop)
                                     {
                                         e.Current.Stop();
-                                        _loggingService.ComponentStatus(e.Current.Component, 0, "stoped", null, e.Current.StoppedAt);
+                                        _log.Log(LogLevel.Information, this, e.Current.Component, "component stopped by request", null, e.Current.StoppedAt);
                                     }
                                 }
                                 else
                                 {
                                     if (e.Current.Exception != null)
                                     {
-                                        _loggingService.ComponentStatus(e.Current.Component, 0, "stoped", e.Current.Exception, e.Current.StoppedAt);
+                                        _log.Log(LogLevel.Warning, this, e.Current.Component, "component stopped with exception", e.Current.Exception, e.Current.StoppedAt);
                                         e.Current.Reset();
 
                                     }
                                     if (init && config.AutoStart || config.RequestStart || config.AutoRestart)
                                     {
                                         e.Current.Start();
-                                        _loggingService.ComponentStatus(e.Current.Component, 0, "started");
+                                        _log.Log(LogLevel.Information, this, e.Current.Component, "component started");
                                     }
                                 }
                             }
@@ -95,6 +100,16 @@ namespace Grabber2.Infrastructure.Services.Server
                     }
                 }
             });
+        }
+
+        public string GetName()
+        {
+            return _componentName;
+        }
+
+        public Guid GetId()
+        {
+            return _componentId;
         }
     }
 }

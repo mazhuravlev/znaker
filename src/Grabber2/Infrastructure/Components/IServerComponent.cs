@@ -3,11 +3,9 @@ using System.Threading;
 
 namespace Grabber2.Infrastructure.Components
 {
-    public interface IServerComponent
+    public interface IServerComponent : IGeneralComponent
     {
         void Configure(IServiceProvider provider);
         void Start(CancellationToken cancellationToken);
-        string GetName();
-        Guid GetId();
     }
 }

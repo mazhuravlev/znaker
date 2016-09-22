@@ -10,6 +10,9 @@ namespace Grabber2.Infrastructure.Components.Olx
     public class OlxUa : IServerComponent
     {
         private readonly Guid _componentId = new Guid("037049F7-41A3-47F0-ADDE-F99F1D55AFD2");
+        private readonly string _componentName = "OlxUaGrabber-v1";
+
+
         private LoggingService _log;
         public void Configure(IServiceProvider provider)
         {
@@ -19,12 +22,13 @@ namespace Grabber2.Infrastructure.Components.Olx
 
         public void Start(CancellationToken cancellationToken)
         {
+            _log.ComponetStarted(this);
             var t = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
                 if (t++ % 100 == 0)
                 {
-                    _log.Log(this, 2, "fast" + t);
+                    _log.Log(LogLevel.Information, this, "fast" + t);
                 }
                 Task.Delay(50, cancellationToken).Wait(cancellationToken);
             }
@@ -33,7 +37,7 @@ namespace Grabber2.Infrastructure.Components.Olx
 
         public string GetName()
         {
-            return "OlxUaGrabber-v1";
+            return _componentName;
         }
 
         public Guid GetId()
